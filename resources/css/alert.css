@@ -1,0 +1,50 @@
+/* public/css/alert.css */
+
+/* Modal Styling */
+.modal-content {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow */
+}
+
+.modal-header {
+    background-color: #f8d7da; /* Background color for error messages */
+    color: #721c24; /* Text color for error messages */
+}
+
+.modal-header.success {
+    background-color: #d4edda; /* Background color for success messages */
+    color: #155724; /* Text color for success messages */
+}
+
+.modal-body {
+    font-size: 1.1rem; /* Adjust font size for readability */
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the right */
+}
+
+/* Button Styling */
+.btn-secondary {
+    background-color: #6c757d; /* Customize secondary button color */
+    border: none; /* Remove border */
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268; /* Darker on hover */
+}
+
+/* Styles for the alert component */
+.alert {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
