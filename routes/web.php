@@ -12,26 +12,18 @@ use App\Http\Controllers\StudentController;
 // Faculty Routes
 Route::post('/faculty', [FacultyController::class, 'store'])->name('faculty.store');
 Route::delete('/faculty', [FacultyController::class, 'delete'])->name('faculty.delete');
-
-
-
 Route::get('/faculty', [StudentCountController::class, 'index'])->name('studentCount.index');
 Route::post('/student-counts/{student_count_id?}', [StudentCountController::class, 'storeOrUpdateOrDelete'])->name('studentCount.storeOrUpdateOrDelete');
 
 
-// Other Routes
+
 Route::get('/', function () { return view('dashboard'); })->name('dashboard');
 Route::get('/students', function () { return view('site/students'); })->name('students');
-// Route::get('/faculty', function () { return view('site/faculty');})->name('faculty');
-
 Route::get('/shift', function () { return view('site/shift'); })->name('shift');
 Route::get('/attendance', function () { return view('site/attendance'); })->name('attendance');
 Route::get('/devicesettings', function () { return view('site/device_settings'); })->name('devicesettings');
 
 
-// Route::resource('shift', ShiftController::class);
-
-// Display all shifts
 Route::get('/shift', [ShiftController::class, 'index'])->name('shift');
 Route::post('/shift/{shift_id?}', [ShiftController::class, 'storeOrUpdateOrDelete'])->name('shift.storeOrUpdateOrDelete');
 

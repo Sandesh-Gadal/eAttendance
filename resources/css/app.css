@@ -80,6 +80,9 @@ body {
     padding: 20px;
     background-color: #ffffff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-height: calc(100vh - /* height of header and menu */ 100px); /* Adjust this value as needed */
+    overflow-y: auto; /* Enables vertical scrolling */
+    padding: 20px; /* Add padding for better spacing */
   }
   
   .dashboardBody iframe {

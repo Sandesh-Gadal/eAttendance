@@ -11,10 +11,10 @@ class StudentController extends Controller
     public function index()
     {
 
-        $shifts = Shift::all(); 
-        $students = Student::all();
+        $students = Student::with(['faculty', 'shift'])->get(); 
         $faculties = Faculty::all();
-        return view('site.students', compact('students','faculties','shifts'));
+        $shifts = Shift::all();
+        return view('students.students', compact('students','faculties','shifts'));
     }
 
     public function create()
@@ -23,21 +23,22 @@ class StudentController extends Controller
     }
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'student_nfc_id' => 'required|integer|unique:students,student_nfc_id', // Ensure it's required, an integer, and unique
-        //     'student_name' => 'required|string|max:255', // Max length validation for name
-        //     'student_rollno' => 'required|string|max:255|unique:students,student_rollno', // Ensure roll number is unique
-        //     'student_dob' => 'required|date',
-        //     'student_semester' => 'required|string|max:255',
-        //     'student_section' => 'required|string|max:255',
-        //     'faculty_id' => 'required|integer|exists:faculties,faculty_id', // Ensure faculty ID exists in the faculties table
-        //     'shift_id' => 'required|integer|exists:shifts,shift_id', // Ensure shift ID exists in the shifts table
-        //     'student_contact' => 'required|string|max:255', // Max length validation
-        //     'student_address' => 'required|string|max:255',
-        //     'student_guardian_phno' => 'required|string|max:255',
-        // ]);
+        // \dd($request->all());
+        $validated= $request->validate([
+            'student_nfc_id' => 'required|integer|unique:students,student_nfc_id', // Ensure it's required, an integer, and unique
+            'student_name' => 'required|string|max:255', // Max length validation for name
+            'student_rollno' => 'required|string|max:255|unique:students,student_rollno', // Ensure roll number is unique
+            'student_dob' => 'required|date',
+            'student_semester' => 'required|string|max:255',
+            'student_section' => 'required|string|max:255',
+            'faculty_id' => 'required|integer|exists:faculties,faculty_id', // Ensure faculty ID exists in the faculties table
+            'shift_id' => 'required|integer|exists:shifts,shift_id', // Ensure shift ID exists in the shifts table
+            'student_contact' => 'required|string|max:255', // Max length validation
+            'student_address' => 'required|string|max:255',
+            'student_guardian_phno' => 'required|string|max:255',
+        ]);
     
-        Student::create();
+        Student::create($validated);
         
     
         return redirect()->back()->with('alert', 'Student added successfully!');

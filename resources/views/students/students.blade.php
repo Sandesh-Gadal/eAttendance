@@ -182,6 +182,31 @@
       .add-student-form select {
         width: 420px;
       }
+
+
+
+
+      /* ---------------student list box -----------------  */
+
+
+      .student-list {
+            max-height: calc(100vh - 100px); /* Adjust height based on header/menu */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding: 20px; /* Optional padding */
+            border: 1px solid #ddd; /* Optional border for better visibility */
+            border-radius: 5px; /* Optional rounded corners */
+        }
+        .student-box {
+            background-color: #f9f9f9; /* Background color for student box */
+            margin: 10px 0; /* Space between boxes */
+            padding: 15px; /* Padding inside each box */
+            border-radius: 5px; /* Rounded corners */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Optional shadow */
+        }
+        .student-actions {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+        }
     </style>
 @endsection
 
@@ -248,11 +273,13 @@
         </div>
 
         <!-- Example Student Box -->
+        <div class="student-list">
+          @foreach ($students as $student)
         <div class="student-box">
           <div class="student-details">
             <div class="student-info">
-              <h3>Sandesh Gadal</h3>
-              <p>BCA 6th Sem 'A' Shift</p>
+              <h3>Name:{{ $student->student_name }}</h3>
+              <p>{{ $student->faculty ? $student->faculty->faculty_name : 'No Faculty Assigned' }}  {{ $student->student_semester }} Sem '{{ $student->Student_section }}' {{ $student->shift ? $student->shift->shift_name : 'No Shift Assigned' }}</p>
             </div>
             <div class="nfc-id">
               <strong>NFC ID: 00123456789</strong>
@@ -267,26 +294,9 @@
             </div>
           </div>
         </div>
-
-        <div class="student-box">
-          <div class="student-details">
-            <div class="student-info">
-              <h3>Abina Bishokarma</h3>
-              <p>BCA 6th Sem 'A' Shift</p>
-            </div>
-            <div class="nfc-id">
-              <strong>NFC ID: 00234567890</strong>
-            </div>
-            <div class="student-actions">
-              <button class="view-btn">
-                <i class="fa-regular fa-eye"></i> View
-              </button>
-              <button class="delete-btn">
-                <i class="fa fa-trash"></i> Delete
-              </button>
-            </div>
-          </div>
-        </div>
+        @endforeach
+      </div>
+      
       </div>
 
       <div id="add-student-form" class="add-student-form" style="display: none">

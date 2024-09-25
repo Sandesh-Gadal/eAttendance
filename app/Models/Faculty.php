@@ -16,4 +16,9 @@ class Faculty extends Model
     {
         return $this->hasMany(StudentCount::class,'id','faculty_id'); // Ensurye 'faculty_id' matches the foreign key
     }
+
+    public function students()
+    {
+        return $this->hasMany(Student::class, 'faculty_id');
+    }
 }
