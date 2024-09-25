@@ -3,6 +3,7 @@
 @section('title', 'Shift Management')
 
 @section('styles')
+
     <style>
         #shift-content {
             margin-left: 70px;
@@ -18,8 +19,7 @@
         .shift-form-container {
             display: flex;
             flex-direction: column;
-          max-width: 600px;
-          
+            max-width: 600px;
         }
         #shift-content .shift-input {
             width: 200px;
@@ -33,12 +33,15 @@
         }
 
         .form-group {
-            display: flex
-           jusdify-content: center;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 4px;
+           
         }
         .shift-table {
-            width: auto; /* Adjusted to fit content */
-            margin-top: 20px; /* Space above the table */
+            width: auto;
+            margin-top: 20px;
             border-collapse: collapse;
         }
         .form-group label {
@@ -49,7 +52,6 @@
             padding: 10px;
             border: 1px solid #ddd;
             text-align: left;
-            
         }
         .shift-table th {
             background-color: #eeeeee;
@@ -78,31 +80,17 @@
             cursor: pointer;
             transition: background-color 0.3s, color 0.3s;
         }
-        /* Update button styles */
         .action-btn.update {
-            background-color: #ffa500; /* Orange */
+            background-color: #ffa500;
             color: white;
         }
-        .action-btn.update:hover {
-            background-color: #e68a00; /* Darker orange */
-        }
-        .action-btn.update:active {
-            background-color: #cc8400; /* Even darker orange */
-        }
-        /* Delete button styles */
         .action-btn.delete {
-            background-color: #ff4d4d; /* Red */
+            background-color: #ff4d4d;
             color: white;
-        }
-        .action-btn.delete:hover {
-            background-color: #e60000; /* Darker red */
-        }
-        .action-btn.delete:active {
-            background-color: #cc0000; /* Even darker red */
         }
         .action-button {
             display: grid;
-            grid-template-columns: auto auto; 
+            grid-template-columns: auto auto;
             gap: 10px;
         }
     </style>
@@ -111,10 +99,11 @@
 @section('content')
 <div id="shift-content" class="dashboard-content">
     <h2>Manage Shifts</h2>
-    <form action="{{ route('shift.store') }}" method="POST" class="shift-form-container" id="shift-form">
+    <form action="{{ route('shift.storeOrUpdateOrDelete') }}" method="POST" class="shift-form-container" id="shift-form">
         @csrf
         <input type="hidden" id="shift-id" name="shift_id" value="" /> <!-- Hidden field for Shift ID -->
-    
+        <input type="hidden" id="form-action" name="action" value="store" /> <!-- Hidden action field -->
+
         <div class="form-group">
             <label for="shift-name">Shift Name:</label>
             <input class="shift-input" type="text" id="shift-name" name="shift_name" placeholder="Enter Shift Name" required/>
@@ -133,7 +122,6 @@
     
         <button type="submit" class="add-btn">Add Shift</button>
     </form>
-    
 
     <h2>Shift List:</h2>
     <div class="shift-table">
@@ -153,10 +141,14 @@
                         <td>{{ $shift->shift_start_time }}</td>
                         <td>{{ $shift->shift_end_time }}</td>
                         <td class="action-button">
-                            <button
-                                class="action-btn update"
-                                onclick="populateForm('{{ $shift->id }}', '{{ $shift->shift_name }}', '{{ $shift->shift_start_time }}', '{{ $shift->shift_end_time }}')">Update</button>
-                            <button  class="action-btn delete"onclick="confirmDelete('{{ $shift->id }}')" >Delete</button>
+                            <button class="action-btn update"
+                                onclick="populateForm('{{ $shift->shift_id }}', '{{ $shift->shift_name }}', '{{ $shift->shift_start_time }}', '{{ $shift->shift_end_time }}')">
+                                Update
+                            </button>
+
+                            <button class="action-btn delete" onclick="deleteShift('{{ $shift->shift_id }}')">
+                                Delete
+                            </button>
                         </td>
                     </tr>
                 @endforeach
@@ -168,63 +160,23 @@
 
 @section('scripts')
 <script>
- function populateForm(shiftId, shiftName, startTime, endTime) {
-    // Populate form fields with shift data
-    document.getElementById('shift-name').value = shiftName;
-    document.getElementById('start-time').value = startTime;
-    document.getElementById('end-time').value = endTime;
-    document.getElementById('shift-id').value = shiftId; // Set shift ID in hidden input
+    function populateForm(shiftId, shiftName, startTime, endTime) {
+        document.getElementById('shift-name').value = shiftName;
+        document.getElementById('start-time').value = startTime;
+        document.getElementById('end-time').value = endTime;
+        document.getElementById('shift-id').value = shiftId;
 
-    // Change button text to "Update"
-    document.querySelector('.add-btn').innerText = 'Update';
-
-    // Update the form's action URL to point to the update route
-    const form = document.querySelector('#shift-form');
-    form.setAttribute('action', `/shift/${shiftId}`);
-
-    // Add a hidden input to change the method to PUT for updating
-    let methodInput = document.createElement('input');
-    methodInput.setAttribute('type', 'hidden');
-    methodInput.setAttribute('name', '_method');
-    methodInput.setAttribute('value', 'PUT');
-    
-    // Remove existing _method input if already present
-    const existingMethodInput = form.querySelector('input[name="_method"]');
-    if (existingMethodInput) {
-        existingMethodInput.remove();
+        document.querySelector('.add-btn').innerText = 'Update';
+        document.getElementById('form-action').value = 'update';
     }
-    form.appendChild(methodInput);
-}
 
+    function deleteShift(shiftId) {
+        if (confirm('Are you sure you want to delete this shift?')) {
+            document.getElementById('shift-id').value = shiftId;
+            document.getElementById('form-action').value = 'delete';
 
-function confirmDelete(shiftId) {
-    if (confirm('Are you sure you want to delete this shift?')) {
-        // Create a form and submit a DELETE request
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/shift/${shiftId}`;
-        form.innerHTML = `
-            @csrf
-            @method('DELETE')
-        `;
-        document.body.appendChild(form);
-        form.submit();
+            document.getElementById('shift-form').submit();
+        }
     }
-}
-
-function resetForm() {
-    document.getElementById('shift-form').reset();
-    document.getElementById('shift-id').value = ''; // Clear hidden shift ID input
-    document.querySelector('.add-btn').innerText = 'Add Shift'; // Reset button text
-    document.querySelector('#shift-form').setAttribute('action', '/shift'); // Reset action to POST
-
-    // Remove any hidden _method input (for PUT requests)
-    const existingMethodInput = document.querySelector('input[name="_method"]');
-    if (existingMethodInput) {
-        existingMethodInput.remove();
-    }
-}
-
-
 </script>
 @endsection

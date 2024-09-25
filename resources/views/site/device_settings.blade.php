@@ -3,6 +3,7 @@
 @section('title', 'Device Settings')
 
 @section('styles')
+
     <style>
         #device-settings-content h2 {
             margin-left: 70px;

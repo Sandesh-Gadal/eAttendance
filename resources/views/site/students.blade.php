@@ -235,11 +235,10 @@
             <div class="form-group">
               <label for="faculty">Faculty:</label>
               <select id="faculty">
-                <option value="">Select Faculty</option>
-                <option value="bba">BBA</option>
-                <option value="bca">BCA</option>
-                <option value="be-civil">BE-Civil</option>
-                <option value="bhm">BHM</option>
+                <option value="" disabled selected>Select Faculty</option>
+                          @foreach($faculties as $faculty)
+                              <option value="{{ $faculty->faculty_id }}">{{ $faculty->faculty_name }}</option>
+                          @endforeach
               </select>
             </div>
           </div>
@@ -298,7 +297,7 @@
                 <div class="form-left">
                     <div class="form-group">
                         <label for="student-id">Student ID:</label>
-                        <input type="text" id="student-id" name="student_id" placeholder="Enter Student ID" />
+                        <input type="text" id="student-id" name="student_nfc_id" placeholder="Enter Student ID" />
                     </div>
                     <div class="form-group">
                         <label for="roll-no">Roll No:</label>
@@ -311,11 +310,10 @@
                     <div class="form-group">
                         <label for="faculty-id">Faculty:</label>
                         <select id="faculty-id" name="faculty_id">
-                            <option value="">Select Faculty</option>
-                            <option value="bba">BBA</option>
-                            <option value="bca">BCA</option>
-                            <option value="be-civil">BE-Civil</option>
-                            <option value="bhm">BHM</option>
+                          <option value="" disabled selected>Select Faculty</option>
+                          @foreach($faculties as $faculty)
+                              <option value="{{ $faculty->faculty_id }}">{{ $faculty->faculty_name }}</option>
+                          @endforeach
                         </select>
                     </div>
                     <div class="form-group">
@@ -335,10 +333,10 @@
                     <div class="form-group">
                         <label for="shift-id">Shift:</label>
                         <select id="shift-id" name="shift_id">
-                            <option value="">Select Shift</option>
-                            <option value="morning">Morning</option>
-                            <option value="afternoon">Afternoon</option>
-                            <option value="evening">Evening</option>
+                          <option value=""disabled selected>Select a shift</option>
+                          @foreach($shifts as $shift)
+                              <option value="{{ $shift->shift_id }}">{{ $shift->shift_name }} ({{ $shift->shift_start_time }} - {{ $shift->shift_end_time }})</option>
+                          @endforeach
                         </select>
                     </div>
                 </div>
@@ -369,7 +367,7 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="register-btn">
+            <button type="submit" class="register-btn" onclick="submit()">
                 Register
             </button>
             <button type="button" class="back-btn" onclick="goBack()">
