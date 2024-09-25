@@ -32,8 +32,9 @@ class CreateDatabaseTables extends Migration
         });
 
         // Students Table
-        Schema::create('student_info', function (Blueprint $table) {
-            $table->id('student_nfc_id'); // Primary Key
+        Schema::create('students', function (Blueprint $table) {
+            $table->unsignedBigInteger('student_nfc_id'); // Primary Key but not auto-increment
+    $table->primary('student_nfc_id');
             $table->string('student_name');
             $table->string('student_rollno')->unique();
             $table->date('student_dob');
@@ -50,7 +51,7 @@ class CreateDatabaseTables extends Migration
         // Attendance Table
         Schema::create('attendances', function (Blueprint $table) {
             $table->id('attendance_id'); // Primary Key
-            $table->foreignId('student_nfc_id')->constrained('student_info', 'student_nfc_id'); // Foreign Key
+            $table->foreignId('student_nfc_id')->constrained('students', 'student_nfc_id'); // Foreign Key
             $table->time('attendance_entry_time');
             $table->string('attendance_remarks')->nullable();
             $table->date('attendance_date');
@@ -68,14 +69,15 @@ class CreateDatabaseTables extends Migration
         });
     }
 
-    public function down()
-    {
-        Schema::dropIfExists('student_counts');
-        Schema::dropIfExists('attendance');
-        Schema::dropIfExists('student_info');
-        Schema::dropIfExists('shifts');
-        Schema::dropIfExists('admins');
-        Schema::dropIfExists('faculties');
+    
+        public function down()
+        {
+            Schema::dropIfExists('student_counts');
+            Schema::dropIfExists('attendances'); // Fixed table name 'attendances'
+            Schema::dropIfExists('students');
+            Schema::dropIfExists('shifts');
+            Schema::dropIfExists('faculties');
+        }
     }
-}
+
 

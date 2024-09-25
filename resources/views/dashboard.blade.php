@@ -52,18 +52,7 @@
 @endsection
 
 @section('content') <!-- Dashboard content -->
-<div id="dashboard-content" class="dashboard-content active">
-  <div class="stats">
-    <div class="stat-item">Total Students: 654</div>
-    <div class="stat-item">Present | Today: 554</div>
-    <div class="stat-item">Absent | Today: 100</div>
-  </div>
-  <div class="recent-activities">
-    <h2>Recent Activities</h2>
-    <p>Activity 1: Updated student records</p>
-    <p>Activity 2: Scheduled new shifts</p>
-    <p>Activity 3: Added holiday schedule</p>
-    <!-- Add more activities as needed -->
-  </div>
-</div>
+
+
+
 @endsection

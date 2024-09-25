@@ -5,11 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class StudentInfo extends Model
+class Student extends Model
 {
     use HasFactory;
-    public $timestamps = false;
-    protected $table = 'student_info';
+    protected $table = 'students';
+   public $timestamps = false ;
+    protected $primaryKey = 'student_nfc_id'; 
+    public $incrementing = false; 
+    protected $keyType = 'string'; 
+
     protected $fillable = [
         'student_nfc_id',
         'student_name',
@@ -23,9 +27,20 @@ class StudentInfo extends Model
         'student_address',
         'student_guardian_phno',
     ];
+
+    // Define relationships if any
     public function faculty()
-    { 
-      
+    {
         return $this->belongsTo(Faculty::class, 'faculty_id');
+    }
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class, 'shift_id');
+    }
+
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class, 'student_nfc_id');
     }
 }
