@@ -197,11 +197,10 @@
             <div class="form-group">
                 <label for="faculty">Faculty:</label>
                 <select id="faculty">
-                    <option value="">Select Faculty</option>
-                    <option value="bba">BBA</option>
-                    <option value="bca">BCA</option>
-                    <option value="be-civil">BE-Civil</option>
-                    <option value="bhm">BHM</option>
+                    <option value="" disabled selected>Select Faculty</option>
+                    @foreach($faculties as $faculty)
+                        <option value="{{ $faculty->faculty_id }}">{{ $faculty->faculty_name }}</option>
+                    @endforeach
                 </select>
             </div>
 

@@ -9,28 +9,7 @@
     />
     <style>
       /********************************* Student Register Form **********************************/
-      .student-box-container {
-        margin: 30px 70px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-      }
-      .student-heading h2 {
-        margin-top: -10px;
-        margin-bottom: -10px;
-        margin-right: 800px;
-      }
-      .student-box {
-        height: 60px;
-        width: calc(100% - 20px);
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-      }
+      
       .student-details {
         display: flex;
         align-items: center;
@@ -103,12 +82,13 @@
         cursor: pointer;
         transition: background-color 0.3s;
         margin: 20px auto;
+        margin-left: 200px;
       }
       .register-btn:hover {
         background-color: #204ba9;
       }
       .back-btn {
-        background-color: #316cec;
+        background-color: #ff7300;
         color: white;
         width: 140px;
         font-weight: bold;
@@ -117,11 +97,11 @@
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.3s;
-        margin: 20px auto;
+        margin: 20px auto 20px -300px;
       }
       .search-action-container {
         display: flex;
-        gap: 50px;
+        gap: 150px;
         margin: 20px 70px;
       }
       .search-area {
@@ -190,23 +170,54 @@
 
 
       .student-list {
-            max-height: calc(100vh - 100px); /* Adjust height based on header/menu */
-            overflow-y: auto; /* Enable vertical scrolling */
+        height:300px;
+            /* max-height: calc(100vh - 100px);  */
+            overflow-y: scroll; /* Enable vertical scrolling */
             padding: 20px; /* Optional padding */
             border: 1px solid #ddd; /* Optional border for better visibility */
             border-radius: 5px; /* Optional rounded corners */
         }
-        .student-box {
-            background-color: #f9f9f9; /* Background color for student box */
-            margin: 10px 0; /* Space between boxes */
-            padding: 15px; /* Padding inside each box */
-            border-radius: 5px; /* Rounded corners */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Optional shadow */
-        }
+     
         .student-actions {
             display: flex;
             gap: 10px; /* Space between buttons */
         }
+        .student-box-container {
+        margin: 30px 70px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        
+      }
+      /* .student-heading h2 {
+        margin-top: -10px;
+        margin-bottom: -10px;
+        margin-right: 800px;
+      } */
+      .student-box {
+        height: 60px;
+        min-width: 600px;
+        padding: 10px 30px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        display: flex;
+        margin: 10px;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .student-detail-list{
+      
+        margin: 30px 70px 0px 70px;
+   
+     
+      }
+
+      .form-action-btn{
+       display: flex;
+       justify-content: space-around;
+      }
+  
     </style>
 @endsection
 
@@ -222,9 +233,6 @@
         <div class="action-buttons">
           <button class="btn-add" onclick="showAddStudentForm()">
             <i class="fa fa-plus"></i> Add Student
-          </button>
-          <button class="btn-delete">
-            <i class="fa fa-trash"></i> Delete Student
           </button>
         </div>
       </div>
@@ -268,6 +276,8 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="student-detail-list" id="student-detail-list">
         <div class="student-heading">
           <h2>Student Details:</h2>
         </div>
@@ -278,17 +288,17 @@
         <div class="student-box">
           <div class="student-details">
             <div class="student-info">
-              <h3>Name:{{ $student->student_name }}</h3>
-              <p>{{ $student->faculty ? $student->faculty->faculty_name : 'No Faculty Assigned' }}  {{ $student->student_semester }} Sem '{{ $student->Student_section }}' {{ $student->shift ? $student->shift->shift_name : 'No Shift Assigned' }}</p>
+              <h3>Name : {{ $student->student_name }}</h3>
+              <p>{{ $student->faculty ? $student->faculty->faculty_name : 'No Faculty Assigned' }} &ensp;{{ $student->student_semester }} Sem  &ensp;'{{ $student->student_section }}' &ensp;{{ $student->shift ? $student->shift->shift_name : 'No Shift Assigned' }}</p>
             </div>
             <div class="nfc-id">
-              <strong>NFC ID: 00123456789</strong>
+              <strong>NFC ID: {{$student->student_nfc_id}}</strong>
             </div>
             <div class="student-actions">
-              <button class="view-btn">
+              <button class="view-btn" id="view-btn" onclick="showView()">
                 <i class="fa-regular fa-eye"></i> View
               </button>
-              <button class="delete-btn">
+              <button class="delete-btn" id="delete-btn" onclick="deleteStudent('{{ $student->student_nfc_id}}')">
                 <i class="fa fa-trash"></i> Delete
               </button>
             </div>
@@ -296,8 +306,8 @@
         </div>
         @endforeach
       </div>
+    </div>
       
-      </div>
 
       <div id="add-student-form" class="add-student-form" style="display: none">
         <h2>Add Student</h2>
@@ -377,26 +387,32 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="register-btn" onclick="submit()">
+            <div class="form-action-btn">
+           <div>
+             <button type="submit" class="register-btn" onclick="submit()">
                 Register
             </button>
-            <button type="button" class="back-btn" onclick="goBack()">
+           </div>
+            <div>
+              <button type="button" class="back-btn" onclick="goBack()">
                 <i class="fas fa-arrow-left"></i> Back
             </button>
-        </form>
+            </div>
+          </div>
+          </form>
     </div>
     
-    </div>
+   
 
     <script>
       function showAddStudentForm() {
         document.getElementById("student-boxes").style.display = "none";
+        document.getElementById("student-detail-list").style.display = "none";
         document.getElementById("add-student-form").style.display = "block";
+
       }
 
       function registerStudent() {
-       
-    
         document.getElementById("add-student-form").style.display = "none";
         document.getElementById("student-boxes").style.display = "flex";
       }
@@ -404,6 +420,14 @@
       function goBack() {
         document.getElementById("add-student-form").style.display = "none";
         document.getElementById("student-boxes").style.display = "flex";
+        document.getElementById("student-detail-list").style.display = "block";
+        
+      }
+
+      function showView(){
+        document.getElementById("student-boxes").style.display = "none";
+        document.getElementById("add-student-form").style.display = "none";
+        document.getElementById("student-detail-list").style.display = "none";
       }
     </script>
 @endsection

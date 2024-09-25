@@ -7,6 +7,7 @@ use App\Http\Controllers\FetchFacultyController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\StudentInfoController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\AttendanceController;
 
 
 // Faculty Routes
@@ -25,6 +26,7 @@ Route::get('/devicesettings', function () { return view('site/device_settings');
 
 
 Route::get('/shift', [ShiftController::class, 'index'])->name('shift');
+Route::get('/shift', [ShiftController::class, 'index'])->name('shift');
 Route::post('/shift/{shift_id?}', [ShiftController::class, 'storeOrUpdateOrDelete'])->name('shift.storeOrUpdateOrDelete');
 
 
@@ -34,3 +36,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
     Route::post('/students', [StudentController::class, 'store'])->name('students.store');
 });
+
+
+
+
+// attendance route
+Route::get('/attendance', [AttendanceController::class, 'index'])->name('shift');
