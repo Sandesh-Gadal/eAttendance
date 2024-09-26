@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Model\Attendance;
-use App\Model\Faculty;
+use App\Models\Attendance;
+use App\Models\Faculty;
 
 
 class AttendanceController extends Controller
@@ -12,7 +12,7 @@ class AttendanceController extends Controller
     public function index(){
            $attendanceData = Attendance::all();
            $faculties = Faculty::all();
-        $shifts = Shift::all();
+      
         return view('site.attendance', compact('attendanceData','faculties'));
     }
 }

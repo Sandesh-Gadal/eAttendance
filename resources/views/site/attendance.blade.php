@@ -208,9 +208,10 @@
                 <label for="duration">Duration:</label>
                 <select id="duration">
                     <option value="">Select Duration</option>
-                    <option value="One Day">One Day</option>
-                    <option value="One Week">One Week</option>
-                    <option value="One Month">One Month</option>
+                    <option value="One Day">1 Day</option>
+                    <option value="One Week">7 Days</option>
+                    <option value="One Month">15 Days</option>
+                    <option value="One Month">30 Days</option>
                 </select>
             </div>
         </div>

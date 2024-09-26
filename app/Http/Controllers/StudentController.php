@@ -19,7 +19,9 @@ class StudentController extends Controller
 
     public function create()
     {
-        return view('site.students');
+        $faculties = Faculty::all();
+        $shifts = Shift::all();
+        return view('students.form', compact('faculties','shifts'));
     }
     public function store(Request $request)
     {
@@ -41,13 +43,19 @@ class StudentController extends Controller
         Student::create($validated);
         
     
-        return redirect()->back()->with('alert', 'Student added successfully!');
+        return redirect()->route('students.index')->with('alert', 'Student added successfully!');
     }
     
-    public function show($id)
+    public function show($student_nfc_id)
     {
-        $student = Student::findOrFail($id);
-        return view('students.show', compact('student'));
+        $student = Student::findOrFail($student_nfc_id);
+        $faculty = Faculty::where('faculty_id', $student->faculty_id)->first();
+        $shift = Shift::where('shift_id', $student->shift_id)->first();
+        $faculties = Faculty::all();
+        $shifts = Shift::all();
+        $students = Student::with(['faculty', 'shift'])->get(); 
+    
+    return view('students.view', compact('student', 'faculty', 'shift' ,'faculties','shifts','students'));
     }
 
     public function edit($id)
@@ -79,12 +87,32 @@ class StudentController extends Controller
                         ->with('success', 'Student updated successfully.');
     }
 
-    public function destroy($id)
+    public function destroy($student_nfc_id)
     {
-        $student = Student::findOrFail($id);
+       
+        $student = Student::where('student_nfc_id', $student_nfc_id)->firstOrFail();
         $student->delete();
 
         return redirect()->route('students.index')
                         ->with('success', 'Student deleted successfully.');
     }
+   
+
+    public function search(Request $request)
+    { 
+        
+        $query = $request->input('query');
+        // dd($query);
+        $students = Student::when($query, function ($queryBuilder) use ($query) {
+            return $queryBuilder->where('student_name', 'LIKE', '%' . $query . '%')
+                ->orWhere('student_nfc_id', 'LIKE', '%' . $query . '%');
+        })->get();
+   
+        $faculties = Faculty::all(); // Assuming you still need faculties for the filters
+    
+        return view('students.students', compact('students', 'faculties'));
+    }
+    
+    
+
 }

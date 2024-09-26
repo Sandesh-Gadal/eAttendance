@@ -19,13 +19,11 @@ Route::post('/student-counts/{student_count_id?}', [StudentCountController::clas
 
 
 Route::get('/', function () { return view('dashboard'); })->name('dashboard');
-Route::get('/students', function () { return view('site/students'); })->name('students');
 Route::get('/shift', function () { return view('site/shift'); })->name('shift');
 Route::get('/attendance', function () { return view('site/attendance'); })->name('attendance');
 Route::get('/devicesettings', function () { return view('site/device_settings'); })->name('devicesettings');
 
 
-Route::get('/shift', [ShiftController::class, 'index'])->name('shift');
 Route::get('/shift', [ShiftController::class, 'index'])->name('shift');
 Route::post('/shift/{shift_id?}', [ShiftController::class, 'storeOrUpdateOrDelete'])->name('shift.storeOrUpdateOrDelete');
 
@@ -35,10 +33,13 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
     Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
     Route::post('/students', [StudentController::class, 'store'])->name('students.store');
+    Route::get('/students/{student_nfc_id?}', [StudentController::class, 'show'])->name('students.show');
+    Route::delete('/students/delete/{student_nfc_id?}', [StudentController::class, 'destroy'])->name('students.destroy');
+    Route::post('/students/search', [StudentController::class, 'search'])->name('students.search');
+
+
 });
 
 
-
-
 // attendance route
-Route::get('/attendance', [AttendanceController::class, 'index'])->name('shift');
+Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
