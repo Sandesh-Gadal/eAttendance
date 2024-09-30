@@ -7,15 +7,22 @@
             </div>
             <div class="nfc-id">
                 <strong>NFC ID: {{$student->student_nfc_id}}</strong>
+                <input type="text" id="student-id1" name="student_nfc_id1" value="{{ $student->student_nfc_id }}" hidden/>
             </div>
             <div class="student-actions">
                 <button class="view-btn" onclick="window.location.href='{{ route('students.show', $student->student_nfc_id) }}'">
                     <i class="fa-regular fa-eye"></i> View
                 </button>
-                <button class="delete-btn" onclick="handleDelete('{{ $student->student_nfc_id }}')">
+                <button class="delete-btn" onclick="handleDelete('{{  $student->student_nfc_id }}')">
                     <i class="fa fa-trash"></i> Delete
                 </button>
             </div>
         </div>
     </div>
 @endforeach
+
+
+@if($students->isEmpty())
+    <p>No students found matching the criteria.</p>
+@endif
+

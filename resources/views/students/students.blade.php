@@ -294,23 +294,75 @@
 
 
    
+    
 
 @endsection
 
 
 @section('scripts')
 <script>
-  let timeout;
+  $(document).ready(function() {
+    $('#semester, #section, #faculty').change(function() {
+        filterStudents();
+    });
 
-document.getElementById('search-input').addEventListener('keyup', function() {
-    // Clear the timeout if the user types again
-    clearTimeout(timeout);
+    function filterStudents() {
+        var semester = $('#semester').val();
+        var section = $('#section').val();
+        var faculty = $('#faculty').val();
 
-    // Set a new timeout to submit the form after 500 milliseconds
-    timeout = setTimeout(function() {
-        document.getElementById('search-form').submit();
-    }, 500); // Adjust the interval here (in milliseconds)
+        $.ajax({
+            url: '{{ url("/students/filter") }}',
+            type: 'GET',
+            data: {
+                semester: semester,
+                section: section,
+                faculty: faculty,
+            },
+            success: function(data) {
+                $('#student-list').html(data.html); // Ensure this matches your HTML structure
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+                console.error('Response:', xhr.responseText);
+            }
+        });
+    }
 });
+
+
+    function handleDelete(student_nfc_id) {
+        if (confirm('Are you sure you want to delete this student?')) {
+            fetch(`/students/delete/${student_nfc_id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to delete the student');
+                }
+            })
+            .then(data => {
+                if (data.success) {
+                    document.querySelector('.student-list').innerHTML = data.html;
+                    alert(data.success);
+                } else {
+                    alert('Failed to delete the student');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        }
+    }
 </script>
 
-@endsection
+
+  @endsection
+  

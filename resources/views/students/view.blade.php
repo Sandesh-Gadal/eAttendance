@@ -364,7 +364,7 @@
       <div class="modal-header">
         <h3>Student Details</h3>
         <div class="action-btn">
-        <button type="button" class="edit-btn" onclick="editStudent({{ $student->id }})">
+        <button type="button" class="edit-btn" onclick="window.location.href='{{ route('students.edit', $student->student_nfc_id) }}'">
             <i class="fa fa-edit"></i> Edit
         </button>
         <button type="button" class="close-btn" onclick="window.location.href='{{ route('students.index') }}'" aria-label="Close">
@@ -469,3 +469,33 @@
   </div>
 </div>
 @endsection
+
+
+
+<script>
+  function editStudent(nfcId) {
+      // Create a form element dynamically
+      let form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '{{ route("students.edit") }}'; // This route should handle the NFC ID and return the populated form
+  
+      // Add CSRF token to the form
+      let csrfField = document.createElement('input');
+      csrfField.type = 'hidden';
+      csrfField.name = '_token';
+      csrfField.value = '{{ csrf_token() }}';
+      form.appendChild(csrfField);
+  
+      // Add NFC ID to the form
+      let nfcField = document.createElement('input');
+      nfcField.type = 'hidden';
+      nfcField.name = 'student_nfc_id';
+      nfcField.value = nfcId;
+      form.appendChild(nfcField);
+  
+      // Append the form to the body and submit it
+      document.body.appendChild(form);
+      form.submit();
+  }
+  </script>
+  

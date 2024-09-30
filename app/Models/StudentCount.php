@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class StudentCount extends Model
 {
     use HasFactory;
-    public $timestamps = false; // Disable timestamps
+    // public $timestamps = false; // Disable timestamps
     protected $fillable = ['faculty_id', 'section', 'semester_level', 'student_number'];
 
 

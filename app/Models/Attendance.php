@@ -18,7 +18,7 @@ class Attendance extends Model
         'attendance_date'
     ];
 
-    public $timestamps = false;
+    // public $timestamps = false;
 
     // Define relationship with student_info
     public function student()

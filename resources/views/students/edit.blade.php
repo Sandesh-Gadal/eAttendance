@@ -1,6 +1,6 @@
 @extends('master')
 
-@section('title', 'Student Register')
+@section('title', 'Student Edit')
 
 @section('styles')
 <style>
@@ -125,100 +125,91 @@
 
 
 @section('content')
-
-
-
-
-<div id="add-student-form" class="add-student-form" >
-    <h2>Add Student</h2>
-    <form method="POST" action="{{ route('students.store') }}">
+<div id="add-student-form" class="add-student-form">
+    <h2>Edit Student</h2>
+    <form method="POST" action="{{ route('students.update', $student->student_nfc_id) }}">
         @csrf
+        @method('PUT')
         <div class="form-container">
             <div class="form-left">
                 <div class="form-group">
                     <label for="student-id">Student ID:</label>
-                    <input type="text" id="student-id" name="student_nfc_id" placeholder="Enter Student ID" required/>
+                    <input type="text" id="student-id" name="student_nfc_id" value="{{ $student->student_nfc_id }}"  disabled />
+                    <input type="text" id="student-id1" name="student_nfc_id1" value="{{ $student->student_nfc_id }}" hidden/>
                 </div>
                 <div class="form-group">
                     <label for="roll-no">Roll No:</label>
-                    <input type="text" id="roll-no" name="student_rollno" placeholder="Enter Roll No" required/>
+                    <input type="text" id="roll-no" name="student_rollno" value="{{ $student->student_rollno }}" required/>
                 </div>
                 <div class="form-group">
                     <label for="dob">Date of Birth:</label>
-                    <input type="date" id="dob" name="student_dob" />
+                    <input type="date" id="dob" name="student_dob" value="{{ $student->student_dob }}" />
                 </div>
                 <div class="form-group">
                     <label for="faculty-id">Faculty:</label>
                     <select id="faculty-id" name="faculty_id" required>
-                      <option value="" disabled selected>Select Faculty</option>
-                      @foreach($faculties as $faculty)
-                          <option value="{{ $faculty->faculty_id }}">{{ $faculty->faculty_name }}</option>
-                      @endforeach
+                        <option value="" disabled>Select Faculty</option>
+                        @foreach($faculties as $faculty)
+                            <option value="{{ $faculty->faculty_id }}" {{ $faculty->faculty_id == $student->faculty_id ? 'selected' : '' }}>{{ $faculty->faculty_name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="semester">Semester:</label>
                     <select id="semester" name="student_semester" required>
                         <option value="">Select Semester</option>
-                        <option value="1">Semester 1</option>
-                        <option value="2">Semester 2</option>
-                        <option value="3">Semester 3</option>
-                        <option value="4">Semester 4</option>
-                        <option value="5">Semester 5</option>
-                        <option value="6">Semester 6</option>
-                        <option value="7">Semester 7</option>
-                        <option value="8">Semester 8</option>
+                        @for ($i = 1; $i <= 8; $i++)
+                            <option value="{{ $i }}" {{ $i == $student->student_semester ? 'selected' : '' }}>Semester {{ $i }}</option>
+                        @endfor
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="shift-id">Shift:</label>
                     <select id="shift-id" name="shift_id" required>
-                      <option value=""disabled selected>Select a shift</option>
-                      @foreach($shifts as $shift)
-                          <option value="{{ $shift->shift_id }}">{{ $shift->shift_name }} ({{ $shift->shift_start_time }} - {{ $shift->shift_end_time }})</option>
-                      @endforeach
+                        <option value="" disabled>Select a shift</option>
+                        @foreach($shifts as $shift)
+                            <option value="{{ $shift->shift_id }}" {{ $shift->shift_id == $student->shift_id ? 'selected' : '' }}>{{ $shift->shift_name }} ({{ $shift->shift_start_time }} - {{ $shift->shift_end_time }})</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
             <div class="form-right">
                 <div class="form-group">
                     <label for="full-name">Full Name:</label>
-                    <input type="text" id="full-name" name="student_name" placeholder="Enter Full Name" required/>
+                    <input type="text" id="full-name" name="student_name" value="{{ $student->student_name }}" required/>
                 </div>
                 <div class="form-group">
                     <label for="section">Section:</label>
                     <select id="section" name="student_section" required>
                         <option value="">Select Section</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
+                        <option value="A" {{ $student->student_section == 'A' ? 'selected' : '' }}>A</option>
+                        <option value="B" {{ $student->student_section == 'B' ? 'selected' : '' }}>B</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="phone">Student Phone No:</label>
-                    <input type="text" id="phone" name="student_contact" placeholder="Enter Phone No" required/>
+                    <input type="text" id="phone" name="student_contact" value="{{ $student->student_contact }}" required/>
                 </div>
                 <div class="form-group">
                     <label for="guardian-phone">Guardian Phone No:</label>
-                    <input type="text" id="guardian-phone" name="student_guardian_phno" placeholder="Enter Guardian Phone No" required/>
+                    <input type="text" id="guardian-phone" name="student_guardian_phno" value="{{ $student->student_guardian_phno }}" required/>
                 </div>
                 <div class="form-group">
                     <label for="address">Address:</label>
-                    <input type="text" id="address" name="student_address" placeholder="Enter Address" required/>
+                    <input type="text" id="address" name="student_address" value="{{ $student->student_address }}" required/>
                 </div>
             </div>
         </div>
         <div class="form-action-btn">
-       <div>
-         <button type="submit" class="register-btn" onclick="submit()">
-            Register
-        </button>
-       </div>
-        <div>
-          <button type="button" class="back-btn" onclick="window.location.href='{{route('students.index')}}'">
-            <i class="fas fa-arrow-left"></i> Back
-        </button>
+            <div>
+                <button type="submit" class="register-btn">Update</button>
+            </div>
+            <div>
+                <button type="button" class="back-btn" onclick="window.location.href='{{ route('students.index') }}'">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
         </div>
-      </div>
-      </form>
+    </form>
 </div>
 @endsection
