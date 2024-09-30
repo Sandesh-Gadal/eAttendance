@@ -114,6 +114,7 @@
         .attendance-table {
             margin: 20px 100px;
             width: 90%;
+         
             border-collapse: collapse;
         }
 
@@ -139,6 +140,25 @@
         .attendance-table td:nth-child(2) {
             background-color: #b3a6e0;
         }
+
+        .attendance-table-container{
+            overflow-x:hidden;
+            overflow-y: auto;
+            height: 300px;  /* Set a fixed height for the table */
+        }
+        #null-message {
+            margin-left: 100px;
+            color: #333;
+        }
+        .student-box {
+          display: flex;
+          margin-left:100px;
+          padding-left:20px;
+          gap:30px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
     </style>
 @endsection
 
@@ -149,14 +169,14 @@
         <div class="attendance-container">
             <!-- Search Area -->
             <div class="search-area">
-                <input
-                    type="text"
-                    id="search"
-                    placeholder="Enter search term"
-                />
+                <form action="{{ route('attendance.search') }}" method="POST">
+                    @csrf
+                    <input type="text" name="student_nfc_id" placeholder="Enter Student ID" required>
+
                 <button class="search-btn"> 
                     <i class="fas fa-search"></i> Search
                 </button>
+                </form>
             </div>
 
             <!-- Date Selector and Download -->
@@ -217,46 +237,39 @@
         </div>
 
         <h2>Attendance Details</h2>
-        <table class="attendance-table">
-            <thead>
-                <tr>
-                    <th>Student NFC ID</th>
-                    <th>Student Name</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Remarks</th>
-                    <th>Attendance</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Example row -->
-                <tr>
-                    <td>001</td>
-                    <td>Ram Tamang</td>
-                    <td>2024-09-01</td>
-                    <td>6:00 AM</td>
-                    <td>On Time</td>
-                    <td>Present</td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>Sandesh Gadal</td>
-                    <td>2024-09-01</td>
-                    <td>6:10 AM</td>
-                    <td>On Time</td>
-                    <td>Present</td>
-                </tr>
-                <tr>
-                    <td>003</td>
-                    <td>Abina Bishokarma</td>
-                    <td>2024-09-01</td>
-                    <td>6:05 AM</td>
-                    <td>On Time</td>
-                    <td>Present</td>
-                </tr>
-                <!-- Add more rows dynamically as needed -->
-            </tbody>
-        </table>
-    </div>
+        <div class="attendance-table-container">
+            @if(isset($student))
+            @include('attendance.partials.individual_student', ['student' => $student, 'attendances' => $attendances ?? []])
+        @else
+            <p id="null-message">Nothing to show . Please enter a Student ID to search.</p>
+        @endif
+        </div>
     <!----------------------------Attendance End------------------------------------>
+@endsection
+
+
+@section('scripts')
+
+<script>
+    $(document).ready(function() {
+        $('#search-form').on('submit', function(e) {
+            console.console.log('i am called');
+            
+            e.preventDefault(); // Prevent the default form submission
+            const formData = $(this).serialize(); // Serialize form data
+
+            $.ajax({
+                url: $(this).attr('action'), // Use the form action
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    $('#attendance-table-container').html(response); // Update the attendance table
+                },
+                error: function(xhr, status, error) {
+                    console.error(error); // Handle errors if necessary
+                }
+            });
+        });
+    });
+</script>
 @endsection

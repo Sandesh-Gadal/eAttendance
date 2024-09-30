@@ -35,7 +35,7 @@ class CreateDatabaseTables extends Migration
         // Students Table
         Schema::create('students', function (Blueprint $table) {
             $table->unsignedBigInteger('student_nfc_id'); // Primary Key but not auto-increment
-    $table->primary('student_nfc_id');
+            $table->primary('student_nfc_id');
             $table->string('student_name');
             $table->string('student_rollno')->unique();
             $table->date('student_dob');
@@ -54,7 +54,6 @@ class CreateDatabaseTables extends Migration
             $table->id('attendance_id'); // Primary Key
             $table->foreignId('student_nfc_id')->constrained('students', 'student_nfc_id'); // Foreign Key
             $table->time('attendance_entry_time');
-            $table->string('attendance_remarks')->nullable();
             $table->date('attendance_date');
             $table->timestamps();
         });

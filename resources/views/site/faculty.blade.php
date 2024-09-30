@@ -50,16 +50,14 @@ select {
   width: 400px;
 }
 
-.facultyadddelbutton {
+.facultyadddelbutton , .facultydeletebutton {
   display: flex;
-  align-items: center;
-  justify-content: flex-start; /* Align buttons to the left */
-  gap: 20px; /* Uniform gap between buttons */
-  margin-left: 100px; /* Align with the form */
+ justify-content: center;
+
 }
 
 .facultyadddelbutton .btn-add,
-.facultyadddelbutton .btn-delete {
+.facultydeletebutton .btn-delete {
   width: 140px;
   color: white;
   font-weight: bold;
@@ -74,7 +72,7 @@ select {
   background-color: #316cec; /* Add button color */
 }
 
-.facultyadddelbutton .btn-delete {
+.facultydeletebutton .btn-delete {
   background-color: #dc3545; /* Delete button color */
 }
 
@@ -84,7 +82,6 @@ select {
 
 /********************************** Faculty Table ***********************************/
    .faculty-table {
-        /* width: 60%; */
         margin-left: 100px;
         border-collapse: collapse;
       }
@@ -108,14 +105,14 @@ select {
 /********************************* Add Number of Students **********************************/
 .form-group select,
 #total-students {
-  min-width: 350px;
+  width: 400px;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   background-color: #f9f9f9;
 }
 
-.btn-add {
+.btn-add , .btn-delete{
   width: 140px;
   background-color: #316cec;
   color: white;
@@ -167,18 +164,25 @@ background-color: #ffa500;
             grid-template-columns: auto auto;
             gap: 10px;
         }
+
+        .faculty-main {
+           display: grid;
+           grid-template-columns: auto auto;
+           width: 90%;
+           gap: 50px;
+        }
+       
     </style>
 @endsection
 
 @section('content')
 
-    <!---------------------------- Faculty Form ------------------------------------>
-   <!-- Add Faculty Form -->
-<form action="{{ route('faculty.store') }}" method="POST">
+ <div class="faculty-main">
+<form action="{{ route('faculty.store') }}" method="POST" class="add-form">
   @csrf
-  <div id="faculty-content">
-      <h2>Add Faculty</h2>
-      <div class="form-container">
+  <div id="faculty-content" >
+      <h2>Add Faculty :</h2>
+      <div class="form-add-container">
           <div class="form-group">
               <label for="faculty-name">Faculty Name:</label>
               <input
@@ -199,12 +203,12 @@ background-color: #ffa500;
 </form>
 
 <!-- Delete Faculty Form -->
-<form action="{{ route('faculty.delete') }}" method="POST">
+<form action="{{ route('faculty.delete') }}" method="POST" class="delete-form">
   @csrf
   @method('DELETE') <!-- This ensures the form will send a DELETE request -->
   <div id="faculty-delete">
-      <h2>Delete Faculty</h2>
-      <div class="form-container">
+      <h2>Delete Faculty :</h2>
+      <div class="form-delete-container">
           <div class="form-group">
               <label for="faculty-delete-name">Select Faculty to Delete:</label>
               <select id="faculty-delete-name" name="faculty_id" required>
@@ -214,7 +218,7 @@ background-color: #ffa500;
                   @endforeach
               </select>
           </div>
-          <div class="facultyadddelbutton">
+          <div class="facultydeletebutton">
               <button class="btn-delete" type="submit">
                   <i class="fa fa-trash"></i> Delete
               </button>
@@ -222,9 +226,9 @@ background-color: #ffa500;
       </div>
   </div>
 </form>
-
+</div>
     <!------------------------- Add Number of Students Form ------------------------->
-    <form action="{{ route('studentCount.storeOrUpdateOrDelete') }}" method="POST" id="studentcount-form"> <!-- Change route as needed -->
+    {{-- <form action="{{ route('studentCount.storeOrUpdateOrDelete') }}" method="POST" id="studentcount-form"> <!-- Change route as needed -->
         @csrf
         <h2>Add Number of Students</h2>
         <input type="hidden" id="student-count-id" name="student_count_id" value="" /> <!-- Hidden field for student count ID -->
@@ -273,7 +277,7 @@ background-color: #ffa500;
             </div>
         </div>
         <button class="btn-add" id="btn-add" type="submit">Add</button>
-    </form>
+    </form> --}}
 
     <!---------------------------- Faculty Table ---------------------------->
     <div class="faculty-list-filter ">
