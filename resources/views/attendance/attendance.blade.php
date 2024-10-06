@@ -226,12 +226,11 @@
 
             <div class="form-group">
                 <label for="duration">Duration:</label>
-                <select id="duration">
-                    <option value="">Select Duration</option>
-                    <option value="One Day">1 Day</option>
-                    <option value="One Week">7 Days</option>
-                    <option value="One Month">15 Days</option>
-                    <option value="One Month">30 Days</option>
+                <select id="duration" name="duration">
+                    <option value="30" {{ $duration == 30 ? 'selected' : '' }}>30 Days</option>
+                    <option value="15" {{ $duration == 15 ? 'selected' : '' }}>15 Days</option>
+                    <option value="7" {{ $duration == 7 ? 'selected' : '' }}>7 Days</option>
+                    <option value="1" {{ $duration == 1 ? 'selected' : '' }}>1 Day</option>
                 </select>
             </div>
         </div>
@@ -239,6 +238,7 @@
         <h2>Attendance Details</h2>
         <div class="attendance-table-container">
             @if(isset($student))
+            <input type="hidden" id="student_id_hidden" value="{{ $student->student_nfc_id }}">
             @include('attendance.partials.individual_student', ['student' => $student, 'attendances' => $attendances ?? []])
         @else
             <p id="null-message">Nothing to show . Please enter a Student ID to search.</p>
@@ -271,5 +271,33 @@
             });
         });
     });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('duration').addEventListener('change', function() {
+        updateAttendance();
+    });
+
+    function updateAttendance() {
+        const duration = document.getElementById('duration').value;
+        const studentId = document.getElementById('student_id_hidden') ? document.getElementById('student_id_hidden').value : null;
+
+        fetch(`{{ route('attendance.duration') }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
+            },
+            body: JSON.stringify({ duration: duration, student_id_hidden: studentId })
+        })
+        .then(response => response.text())
+        .then(data => {
+            document.querySelector('.attendance-table-container').innerHTML = data;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+});
+
+
 </script>
 @endsection

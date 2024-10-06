@@ -4,7 +4,7 @@
     <p><strong>NFC ID: &ensp;{{ $student->student_nfc_id }}</strong></p>
 </div>
 @endif
-
+<input type="hidden" id="student_id_hidden" value="{{ $student ? $student->student_nfc_id : '' }}">
 <table class="attendance-table">
     <thead>
         <tr>
@@ -16,10 +16,9 @@
     </thead>
     <tbody>
         @php
-            // Get the date range for the past month
-            $startDate = now()->subMonth()->startOfDay();
-            $endDate = now()->endOfDay();
             $dates = [];
+            $startDate = now()->subDays($duration)->startOfDay();
+            $endDate = now()->endOfDay();
             for ($date = $startDate; $date <= $endDate; $date->addDay()) {
                 $dates[] = $date->copy();
             }
@@ -27,40 +26,33 @@
         
         @foreach ($dates as $date)
         @php
-            // Find attendance for the current date
             $attendance = $attendances->where('attendance_date', $date->toDateString())->first();
-
-            // Determine shift start time, assuming it's passed from the controller
             $shiftStartTime = $shift ? Carbon\Carbon::parse($shift->shift_start_time) : null;
 
-            // Determine if attendance is on time or late
+            $entryTime = null;
+            $remarks = '-';
+            $attendanceStatus = 'Absent'; // Default to Absent
+
             if ($attendance) {
                 $entryTime = Carbon\Carbon::parse($attendance->attendance_entry_time);
-                $isOnTime = $entryTime <= $shiftStartTime; // On Time if entry is before or at the start time
-                $isLate = $entryTime > $shiftStartTime->copy()->addMinutes(10); // Late if entry is more than 10 minutes after start time
-            } else {
-                $isOnTime = false;
-                $isLate = false;
+
+                if ($entryTime < $shiftStartTime->copy()->subMinutes(10)) {
+                    $remarks = 'Early';
+                } elseif ($entryTime >= $shiftStartTime->copy()->subMinutes(10) && $entryTime <= $shiftStartTime->copy()->addMinutes(10)) {
+                    $remarks = 'On time';
+                } else {
+                    $remarks = 'Late';
+                }
+
+                $attendanceStatus = 'Present'; // Mark as Present if there's an attendance record
             }
         @endphp
         
         <tr>
             <td>{{ $date->toDateString() }}</td>
-            <td>{{ $attendance ? $attendance->attendance_entry_time : '-' }}</td>
-            <td>
-                @if ($attendance)
-                    @if ($isOnTime)
-                        {{ 'On Time' }}
-                    @elseif ($isLate)
-                        {{ 'Late' }}
-                    @else
-                        {{ 'Present' }}  <!-- Default to Present if not late -->
-                    @endif
-                @else
-                    {{ '-' }}
-                @endif
-            </td>
-            <td>{{ $attendance ? ($isOnTime ? 'Present' : 'Absent') : 'Absent' }}</td>
+            <td>{{ $entryTime ? $entryTime->format('H:i') : '-' }}</td>
+            <td>{{ $attendance ? $remarks : '-' }}</td>
+            <td>{{ $attendanceStatus }}</td>
         </tr>
         @endforeach
     </tbody>

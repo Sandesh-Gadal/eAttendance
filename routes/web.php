@@ -47,4 +47,5 @@ Route::delete('/students/delete/{student_nfc_id}', [StudentController::class, 'd
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
 // Route::post('/attendance/search', [AttendanceController::class, 'search']);
 Route::post('/attendance/filter', [AttendanceController::class, 'filterByDate']);
+Route::post('/attendance/Durationfilter', [AttendanceController::class, 'filterByDuration'])->name('attendance.duration');
 Route::post('/attendance/search', [AttendanceController::class, 'searchIndividualAttendance'])->name('attendance.search');
