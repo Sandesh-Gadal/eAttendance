@@ -146,4 +146,54 @@ public function getFacultyAttendance(Request $request)
     return redirect()->back()->with('error', 'Faculty not found.');
 }
 
+
+
+public function getSemesterAttendance(Request $request)
+{
+    $faculty = Faculty::where('faculty_id', $request->input('facultyId'))->first();
+    $semester = $request->input('semester'); // Get the selected semester
+
+    if ($faculty && $semester) {
+        $duration = $request->input('duration', 30); // Default to 30 days if no duration is selected
+        $startDate = now()->subDays($duration)->startOfDay();
+        $endDate = now()->endOfDay();
+
+        // Get all students of the faculty and semester
+        $students = Student::where('faculty_id', $faculty->faculty_id)
+            ->where('semester', $semester)
+            ->pluck('student_nfc_id');
+
+        // Initialize an array to hold attendance summary
+        $attendanceSummary = [];
+
+        // Loop through each day in the duration
+        for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+            $presentCount = 0;
+            $absentCount = 0;
+
+            foreach ($students as $studentNfcId) {
+                $attendance = Attendance::where('student_nfc_id', $studentNfcId)
+                    ->whereDate('attendance_date', $date)
+                    ->first();
+
+                if ($attendance) {
+                    $presentCount++;
+                } else {
+                    $absentCount++;
+                }
+            }
+
+            $attendanceSummary[] = [
+                'date' => $date->toDateString(),
+                'present' => $presentCount,
+                'absent' => $absentCount,
+            ];
+        }
+
+        return view('attendance.partials.semester_attendance', compact('faculty', 'attendanceSummary', 'duration', 'semester'));
+    }
+
+    // Handle the case where the faculty or semester is not found
+    return redirect()->back()->with('error', 'Faculty or semester not found.');
+}
 }

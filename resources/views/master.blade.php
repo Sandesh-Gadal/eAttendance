@@ -6,9 +6,10 @@
     <title>@yield('title', 'Dashboard')</title> <!-- Dynamic title -->
     
     <!-- External CSS -->
-    @vite(['resources/css/app.css', 'resources/css/style.css'])
+    @vite(['resources/css/app.css'])
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"> </script>
    
