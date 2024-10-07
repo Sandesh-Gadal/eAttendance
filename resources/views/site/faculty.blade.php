@@ -50,16 +50,14 @@ select {
   width: 400px;
 }
 
-.facultyadddelbutton {
+.facultyadddelbutton , .facultydeletebutton {
   display: flex;
-  align-items: center;
-  justify-content: flex-start; /* Align buttons to the left */
-  gap: 20px; /* Uniform gap between buttons */
-  margin-left: 100px; /* Align with the form */
+ justify-content: center;
+
 }
 
 .facultyadddelbutton .btn-add,
-.facultyadddelbutton .btn-delete {
+.facultydeletebutton .btn-delete {
   width: 140px;
   color: white;
   font-weight: bold;
@@ -74,7 +72,7 @@ select {
   background-color: #316cec; /* Add button color */
 }
 
-.facultyadddelbutton .btn-delete {
+.facultydeletebutton .btn-delete {
   background-color: #dc3545; /* Delete button color */
 }
 
@@ -84,7 +82,6 @@ select {
 
 /********************************** Faculty Table ***********************************/
    .faculty-table {
-        /* width: 60%; */
         margin-left: 100px;
         border-collapse: collapse;
       }
@@ -108,14 +105,14 @@ select {
 /********************************* Add Number of Students **********************************/
 .form-group select,
 #total-students {
-  min-width: 350px;
+  width: 400px;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   background-color: #f9f9f9;
 }
 
-.btn-add {
+.btn-add , .btn-delete{
   width: 140px;
   background-color: #316cec;
   color: white;
@@ -167,18 +164,25 @@ background-color: #ffa500;
             grid-template-columns: auto auto;
             gap: 10px;
         }
+
+        .faculty-main {
+           display: grid;
+           grid-template-columns: auto auto;
+           width: 90%;
+           gap: 50px;
+        }
+       
     </style>
 @endsection
 
 @section('content')
 
-    <!---------------------------- Faculty Form ------------------------------------>
-   <!-- Add Faculty Form -->
-<form action="{{ route('faculty.store') }}" method="POST">
+ <div class="faculty-main">
+<form action="{{ route('faculty.store') }}" method="POST" class="add-form">
   @csrf
-  <div id="faculty-content">
-      <h2>Add Faculty</h2>
-      <div class="form-container">
+  <div id="faculty-content" >
+      <h2>Add Faculty :</h2>
+      <div class="form-add-container">
           <div class="form-group">
               <label for="faculty-name">Faculty Name:</label>
               <input
@@ -199,12 +203,12 @@ background-color: #ffa500;
 </form>
 
 <!-- Delete Faculty Form -->
-<form action="{{ route('faculty.delete') }}" method="POST">
+<form action="{{ route('faculty.delete') }}" method="POST" class="delete-form">
   @csrf
   @method('DELETE') <!-- This ensures the form will send a DELETE request -->
   <div id="faculty-delete">
-      <h2>Delete Faculty</h2>
-      <div class="form-container">
+      <h2>Delete Faculty :</h2>
+      <div class="form-delete-container">
           <div class="form-group">
               <label for="faculty-delete-name">Select Faculty to Delete:</label>
               <select id="faculty-delete-name" name="faculty_id" required>
@@ -214,7 +218,7 @@ background-color: #ffa500;
                   @endforeach
               </select>
           </div>
-          <div class="facultyadddelbutton">
+          <div class="facultydeletebutton">
               <button class="btn-delete" type="submit">
                   <i class="fa fa-trash"></i> Delete
               </button>
@@ -222,106 +226,32 @@ background-color: #ffa500;
       </div>
   </div>
 </form>
-
-    <!------------------------- Add Number of Students Form ------------------------->
-    <form action="{{ route('studentCount.storeOrUpdateOrDelete') }}" method="POST" id="studentcount-form"> <!-- Change route as needed -->
-        @csrf
-        <h2>Add Number of Students</h2>
-        <input type="hidden" id="student-count-id" name="student_count_id" value="" /> <!-- Hidden field for student count ID -->
-        <input type="hidden" id="form-action" name="action" value="store" />
-
-        <div class="form-container">
-            <div class="form-left">
-                <div class="form-group">
-                    <label for="faculty">Select Faculty</label>
-                    <select name="faculty_id" id="faculty" required>
-                        <option value="" disabled selected>Select Faculty</option>
-                        @foreach($faculties as $faculty)
-                            <option value="{{ $faculty->faculty_id }}">{{ $faculty->faculty_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="section">Section:</label>
-                    <select id="section" name="section" required>
-                        <option value="" disabled selected>Select Section</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-right">
-                <div class="form-group">
-                    <label for="semester">Semester:</label>
-                    <select id="semester" name="semester_level" required>
-                        <option value="" disabled selected>Select Semester</option>
-                        @for($i = 1; $i <= 9; $i++)
-                            <option value="{{ $i }}">Semester {{ $i }}</option>
-                        @endfor
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="total-students">Total Students:</label>
-                    <input
-                        type="number"
-                        id="total-students"
-                        name="student_number"
-                        placeholder="Enter Total Students"
-                        required
-                    />
-                </div>
-            </div>
-        </div>
-        <button class="btn-add" id="btn-add" type="submit">Add</button>
-    </form>
+</div>
+ 
 
     <!---------------------------- Faculty Table ---------------------------->
     <div class="faculty-list-filter ">
       <h2>Faculty Details:</h2> 
-      {{-- <form method="GET" action="{{ route('fetch-faculty-table') }}">
-        <select name="faculty_id" id="faculty" required>
-            <option value="" disabled selected>Select Faculty</option>
-            @foreach($faculties as $faculty)
-                <option value="{{ $faculty->faculty_id }}">
-                    {{ $faculty->faculty_name }}
-                </option>
-            @endforeach
-        </select>
-        <button type="submit">Filter</button>
-    </form> --}}
   </div>
   <table class="faculty-table">
     <thead>
         <tr>
-            <th>Faculty</th>
-            <th>Semester</th>
-            <th>Section</th>
+            <th>Faculty Name</th>
+            <th>Total Semesters</th>
             <th>Total Students</th>
-            <th>Registered Students</th>
-            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        @foreach ($studentCounts as $studentCount)
-                <tr>
-                  <td>{{ $studentCount->faculty ? $studentCount->faculty->faculty_name : 'No Faculty Assigned' }}</td>
-                    <td>{{ $studentCount->semester_level }}</td>
-                    <td>{{ $studentCount->section }}</td>
-                    <td>{{ $studentCount->student_number }}</td>
-                    <td>{{ $studentCount->registered_students }}</td>
-                    <td class="action-button">
-                        <button class="action-btn update"
-                            onclick="populateFacultyForm('{{ $studentCount->id }}', '{{ $faculty->faculty_id }}', '{{ $studentCount->section }}', '{{ $studentCount->semester_level }}', '{{ $studentCount->student_number }}')">
-                            Update
-                        </button>
-                        <button class="action-btn delete" onclick="deleteStudentCount('{{ $studentCount->id }}')">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-        @endforeach
+      @foreach ($faculties as $faculty)
+      <tr>
+        <td>{{ $faculty->faculty_name }}</td>
+        <td>{{ $faculty->total_semesters }}</td>
+        <td>{{ $faculty->total_students }}</td>
+      </tr>
+  @endforeach
     </tbody>
 </table>
+
 
 
 @endsection
@@ -329,24 +259,6 @@ background-color: #ffa500;
 
 @section('scripts')
 <script>
-    function populateFacultyForm(id, facultyId, section, semester, totalStudents) {
-      console.log(id, facultyId, section, semester, totalStudents); 
-        document.getElementById('faculty').value = facultyId; // Assuming you have faculty ID in the form
-        document.getElementById('section').value = section;
-        document.getElementById('semester').value = semester;
-        document.getElementById('total-students').value = totalStudents;
-        document.getElementById('form-action').value = 'update'; // Update hidden field for the action
-        document.getElementById('student-count-id').value =id; // Adjust based on your hidden input for studentCount ID
-        document.getElementById('btn-add').innerText = 'Update';
-    }
 
-    function deleteStudentCount(id) {
-        if (confirm('Are you sure you want to delete this shift?')) {
-          console.log(id);
-            document.getElementById('student-count-id').value = id;
-            document.getElementById('form-action').value = 'delete';
-            document.getElementById('studentcount-form').submit();
-        }
-    }
 </script>
 @endsection

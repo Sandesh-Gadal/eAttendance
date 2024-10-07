@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Attendance extends Model
 {
     use HasFactory;
-
-    protected $table = 'attendances';
+  
     protected $primaryKey = 'attendance_id';
 
     protected $fillable = [
@@ -19,7 +18,7 @@ class Attendance extends Model
         'attendance_date'
     ];
 
-    public $timestamps = false;
+    // public $timestamps = false;
 
     // Define relationship with student_info
     public function student()

@@ -9,7 +9,7 @@ class Student extends Model
 {
     use HasFactory;
     protected $table = 'students';
-   public $timestamps = false ;
+//    public $timestamps = false ;
     protected $primaryKey = 'student_nfc_id'; 
     public $incrementing = false; 
     protected $keyType = 'string'; 

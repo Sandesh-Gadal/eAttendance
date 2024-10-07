@@ -13,6 +13,7 @@ class CreateDatabaseTables extends Migration
             $table->id('admin_id'); // Primary Key
             $table->string('admin_username');
             $table->string('admin_password');
+            $table->timestamps();
         });
 
         // Shifts Table
@@ -21,20 +22,20 @@ class CreateDatabaseTables extends Migration
             $table->string('shift_name');
             $table->time('shift_start_time');
             $table->time('shift_end_time');
-           
+            $table->timestamps();
         });
 
         // Faculties Table
         Schema::create('faculties', function (Blueprint $table) {
             $table->id('faculty_id'); // Primary Key
             $table->string('faculty_name');
-            
+            $table->timestamps();
         });
 
         // Students Table
         Schema::create('students', function (Blueprint $table) {
             $table->unsignedBigInteger('student_nfc_id'); // Primary Key but not auto-increment
-    $table->primary('student_nfc_id');
+            $table->primary('student_nfc_id');
             $table->string('student_name');
             $table->string('student_rollno')->unique();
             $table->date('student_dob');
@@ -45,7 +46,7 @@ class CreateDatabaseTables extends Migration
             $table->string('student_contact');
             $table->string('student_address');
             $table->string('student_guardian_phno');
-          
+            $table->timestamps();
         });
 
         // Attendance Table
@@ -53,9 +54,8 @@ class CreateDatabaseTables extends Migration
             $table->id('attendance_id'); // Primary Key
             $table->foreignId('student_nfc_id')->constrained('students', 'student_nfc_id'); // Foreign Key
             $table->time('attendance_entry_time');
-            $table->string('attendance_remarks')->nullable();
             $table->date('attendance_date');
-            
+            $table->timestamps();
         });
 
         // Student Count Table
@@ -65,7 +65,7 @@ class CreateDatabaseTables extends Migration
             $table->integer('semester_level');
             $table->string('section');
             $table->integer('student_number');
-          
+            $table->timestamps();
         });
     }
 
