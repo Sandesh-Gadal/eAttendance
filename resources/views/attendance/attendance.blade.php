@@ -254,6 +254,14 @@
                 <p id="null-message">No attendance records found for the selected duration.</p>
             @endif
         </div>
+
+        <div class="section-attendance-table-container" id="sectionAttendanceContainer">
+            @if(isset($section))
+                @include('attendance.partials.section_attendance', ['faculty' => $faculty, 'attendanceSummary' => $attendanceSummary ?? []])
+            @else
+                <p id="null-message">No attendance records found for the selected duration.</p>
+            @endif
+        </div>
     </div>
 @endsection
 
@@ -272,6 +280,10 @@ document.addEventListener('DOMContentLoaded', function() {
         updateAttendance();
     });
 
+    document.getElementById('section').addEventListener('change', function() {
+    updateAttendance();
+});
+
     document.querySelector('.download-btn').addEventListener('click', function() {
         downloadTableAsExcel();
     });
@@ -284,15 +296,43 @@ document.addEventListener('DOMContentLoaded', function() {
         const studentId = document.getElementById('student_id_hidden') ? document.getElementById('student_id_hidden').value : null;
         const facultyId = document.getElementById('faculty') ? document.getElementById('faculty').value : null;
         const semester = document.getElementById('semester') ? document.getElementById('semester').value : null;
+        const section = document.getElementById('section') ? document.getElementById('section').value : null;
 
         const individualAttendanceContainer = document.getElementById('individualAttendanceContainer');
         const facultyAttendanceContainer = document.getElementById('facultyAttendanceContainer');
         const semesterAttendanceContainer = document.getElementById('semesterAttendanceContainer');
+        const sectionAttendanceContainer = document.getElementById('sectionAttendanceContainer');
 
-        if (facultyId && semester) {
+        if (facultyId && semester && section) {
+        // Hide the individual and faculty attendance containers, show the section attendance container
+        if (individualAttendanceContainer) individualAttendanceContainer.style.display = 'none';
+        if (facultyAttendanceContainer) facultyAttendanceContainer.style.display = 'none';
+        if (semesterAttendanceContainer) semesterAttendanceContainer.style.display = 'none';
+        if (sectionAttendanceContainer) sectionAttendanceContainer.style.display = 'block';
+
+        fetch(`{{ route('attendance.section') }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ duration: duration, facultyId: facultyId, semester: semester, section: section })
+        })
+        .then(response => response.text())
+        .then(data => {
+            const sectionContainer = document.querySelector('.section-attendance-table-container');
+            if (sectionContainer) {
+                sectionContainer.innerHTML = data;
+            } else {
+                console.error('Section attendance container not found');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }else if (facultyId && semester) {
             // Hide the individual and faculty attendance containers, show the semester attendance container
             if (individualAttendanceContainer) individualAttendanceContainer.style.display = 'none';
             if (facultyAttendanceContainer) facultyAttendanceContainer.style.display = 'none';
+            if (sectionAttendanceContainer) sectionAttendanceContainer.style.display = 'none';
             if (semesterAttendanceContainer) semesterAttendanceContainer.style.display = 'block';
 
             fetch(`{{ route('attendance.semester') }}`, {
@@ -317,6 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Hide the individual and semester attendance containers, show the faculty attendance container
             if (individualAttendanceContainer) individualAttendanceContainer.style.display = 'none';
             if (semesterAttendanceContainer) semesterAttendanceContainer.style.display = 'none';
+            if (sectionAttendanceContainer) sectionAttendanceContainer.style.display = 'none';
             if (facultyAttendanceContainer) facultyAttendanceContainer.style.display = 'block';
 
             fetch(`{{ route('attendance.faculty') }}`, {
@@ -341,6 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show the individual attendance container, hide the faculty and semester attendance containers
             if (facultyAttendanceContainer) facultyAttendanceContainer.style.display = 'none';
             if (semesterAttendanceContainer) semesterAttendanceContainer.style.display = 'none';
+            if (sectionAttendanceContainer) sectionAttendanceContainer.style.display = 'none';
             if (individualAttendanceContainer) individualAttendanceContainer.style.display = 'block';
 
             fetch(`{{ route('attendance.duration') }}`, {

@@ -49,5 +49,5 @@ Route::post('/attendance/filter', [AttendanceController::class, 'filterByDate'])
 Route::post('/attendance/Durationfilter', [AttendanceController::class, 'filterByDuration'])->name('attendance.duration');
 Route::post('/attendance/faculty', [AttendanceController::class, 'getFacultyAttendance'])->name('attendance.faculty');
 Route::post('/attendance/semester', [AttendanceController::class, 'getSemesterAttendance'])->name('attendance.semester');
-
+Route::post('/attendance/section', [AttendanceController::class, 'getSectionAttendance'])->name('attendance.section');
 Route::post('/attendance/search', [AttendanceController::class, 'searchIndividualAttendance'])->name('attendance.search');

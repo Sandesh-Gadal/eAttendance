@@ -45,14 +45,7 @@ class AttendanceController extends Controller
             $faculties = Faculty::all(); // Fetch all faculties
             $shift= $student ? Shift::find($student->shift_id) : null;
             $duration = $request->input('duration', 30);
-// dd($student, $attendances, $faculties, $shifts);
-        
-            if ($request->ajax()) {
-                // Return the attendance partial if the request is AJAX
-                return view('attendance.partials.individual_student', compact('student', 'attendances', 'faculties','shift','duration'));
-            }
-        
-            // For non-AJAX requests, you can still return the main view if necessary
+
             return view('attendance.attendance', compact('student', 'attendances', 'faculties','shift','duration'));
     
 }
@@ -160,7 +153,7 @@ public function getSemesterAttendance(Request $request)
 
         // Get all students of the faculty and semester
         $students = Student::where('faculty_id', $faculty->faculty_id)
-            ->where('semester', $semester)
+            ->where('student_semester', $semester)
             ->pluck('student_nfc_id');
 
         // Initialize an array to hold attendance summary
@@ -196,4 +189,57 @@ public function getSemesterAttendance(Request $request)
     // Handle the case where the faculty or semester is not found
     return redirect()->back()->with('error', 'Faculty or semester not found.');
 }
+
+
+
+public function getSectionAttendance(Request $request)
+{
+    $faculty = Faculty::where('faculty_id', $request->input('facultyId'))->first();
+    $semester = $request->input('semester');
+    $section = $request->input('section'); // Get the selected section
+
+    if ($faculty && $semester && $section) {
+        $duration = $request->input('duration', 30);
+        $startDate = now()->subDays($duration)->startOfDay();
+        $endDate = now()->endOfDay();
+
+        // Get all students of the faculty, semester, and section
+        $students = Student::where('faculty_id', $faculty->faculty_id)
+            ->where('student_semester', $semester)
+            ->where('student_section', $section)
+            ->pluck('student_nfc_id');
+
+        // Initialize an array to hold attendance summary
+        $attendanceSummary = [];
+
+        // Loop through each day in the duration
+        for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+            $presentCount = 0;
+            $absentCount = 0;
+
+            foreach ($students as $studentNfcId) {
+                $attendance = Attendance::where('student_nfc_id', $studentNfcId)
+                    ->whereDate('attendance_date', $date)
+                    ->first();
+
+                if ($attendance) {
+                    $presentCount++;
+                } else {
+                    $absentCount++;
+                }
+            }
+
+            $attendanceSummary[] = [
+                'date' => $date->toDateString(),
+                'present' => $presentCount,
+                'absent' => $absentCount,
+            ];
+        }
+
+        return view('attendance.partials.section_attendance', compact('faculty', 'attendanceSummary', 'duration', 'semester', 'section'));
+    }
+
+    return redirect()->back()->with('error', 'Faculty, semester, or section not found.');
+}
+
 }
