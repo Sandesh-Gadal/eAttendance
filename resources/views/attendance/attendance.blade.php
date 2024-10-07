@@ -132,10 +132,10 @@
             background-color: #b3a6e0;
         }
 
-        .individual-attendance-table-container {
+        .individual-attendance-table-container , .faculty-attendance-table-container  {
             overflow-x: hidden;
             overflow-y: auto;
-            height: 300px;
+            height: 50vh;
         }
 
         #null-message {
@@ -143,7 +143,7 @@
             color: #333;
         }
 
-        .student-box {
+        .student-box , .faculty-box{
             display: flex;
             margin-left: 100px;
             padding-left: 20px;

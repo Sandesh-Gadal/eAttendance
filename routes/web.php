@@ -11,10 +11,9 @@ use App\Http\Controllers\AttendanceController;
 
 
 // Faculty Routes
-Route::post('/faculty', [FacultyController::class, 'store'])->name('faculty.store');
+Route::post('/faculty/add', [FacultyController::class, 'store'])->name('faculty.store');
 Route::delete('/faculty', [FacultyController::class, 'delete'])->name('faculty.delete');
-Route::get('/faculty', [StudentCountController::class, 'index'])->name('studentCount.index');
-Route::post('/student-counts/{student_count_id?}', [StudentCountController::class, 'storeOrUpdateOrDelete'])->name('studentCount.storeOrUpdateOrDelete');
+Route::get('/faculty', [FacultyController::class, 'index']);
 
 
 

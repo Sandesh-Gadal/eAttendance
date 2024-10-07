@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Faculty; // Adjust if your model is named differently
-use App\Models\StudentCount;
+use App\Models\Student;
 
 class FacultyController extends Controller
 {
@@ -27,15 +27,37 @@ class FacultyController extends Controller
         }
         
     }
-    public function index()
-    {
-        // Fetch all faculties
-        $faculties = Faculty::all();
-        $studentcounts = StudentCount::all();
 
-        // Return the view with the fetched faculties
-        return view('site.faculty', compact('faculties','studentcounts'));
-    }
+  
+        public function index()
+        {
+            // Fetch all faculties
+            $faculties = Faculty::all();
+    
+            // Calculate total students and total semesters for each faculty
+            $faculties = $faculties->map(function ($faculty) {
+                $totalStudents = Student::where('faculty_id', $faculty->faculty_id)->count();
+                $totalSemesters = Student::where('faculty_id', $faculty->faculty_id)
+                                          ->distinct()
+                                          ->count('student_semester');
+    
+                // Add the calculated data to the faculty object
+                $faculty->total_students = $totalStudents;
+                $faculty->total_semesters = $totalSemesters;
+          
+    
+                return $faculty;
+            });
+          
+    
+            // Use dd() to check the data in the console (optional)
+            // dd($faculties);
+    
+            // Return the view with the fetched faculties
+            return view('site.faculty', compact('faculties'));
+        }
+
+
     public function delete(Request $request)
     {
         // Find the faculty by its ID

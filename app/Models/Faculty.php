@@ -11,11 +11,7 @@ class Faculty extends Model
     use HasFactory;
     protected $primaryKey = 'faculty_id';
     protected $fillable = ['faculty_id','faculty_name']; 
-
-    public function studentCounts()
-    {
-        return $this->hasMany(StudentCount::class,'id','faculty_id'); // Ensurye 'faculty_id' matches the foreign key
-    }
+   
 
     public function students()
     {
