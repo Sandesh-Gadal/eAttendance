@@ -2,10 +2,9 @@
 
 @section('title', 'Dashboard')
 
-@section('styles') <!-- Dashboard-specific styles -->
+@section('styles') 
 <style>
-
-  main {
+ main {
     width: 100%;
     padding: 20px;
     background-color: #ffffff;
@@ -58,22 +57,25 @@
     max-width: 300px; /* Set maximum width for the pie chart */
     margin: 0 auto; /* Center the pie chart */
   }
+  h3{
+    text-align: center;
+  }
 </style>
 @endsection
 
-@section('content') <!-- Dashboard content -->
+@section('content') 
 <main>
   <div id="dashboard-content" class="dashboard-content active">
     <div class="stats">
-      <div class="stat-item">Total Students: <span>654</span></div>
-      <div class="stat-item">Present | Today: <span>554</span></div>
-      <div class="stat-item">Absent | Today: <span>100</span></div>
+      <div class="stat-item">Total Students: <span>{{ $chartData['totalStudents'] }}</span></div>
+      <div class="stat-item">Present | Today: <span>{{ $chartData['presentCount'] }}</span></div>
+      <div class="stat-item">Absent | Today: <span>{{ $chartData['absentCount'] }}</span></div>
     </div>
 
     <div class="chart-container">
       <div class="chart">
-        <h3>Attendance Bar Chart</h3>
-        <canvas id="barChart"></canvas>
+        <h3>Attendance Line Chart (Last 30 Days)</h3>
+        <canvas id="lineChart"></canvas>
       </div>
 
       <div class="chart">
@@ -85,43 +87,36 @@
 </main>
 @endsection
 
-
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Bar Chart
-  const barCtx = document.getElementById("barChart").getContext("2d");
-  const barChart = new Chart(barCtx, {
-    type: "bar",
+  // Line Chart
+  const lineCtx = document.getElementById("lineChart").getContext("2d");
+  const lineChart = new Chart(lineCtx, {
+    type: "line",
     data: {
-      labels: ["Total Students", "Present", "Absent"],
+      labels: @json($chartData['attendanceData']['labels']),
       datasets: [
         {
-          label: "Students",
-          data: [654, 554, 100],
-          backgroundColor: ["#316CEC", "#4CAF50", "#FF5733"],
-          borderColor: ["#316CEC", "#4CAF50", "#FF5733"],
-          borderWidth: 1,
+          label: 'Present',
+          data: @json($chartData['attendanceData']['presentData']),
+          borderColor: '#4CAF50', // Green for present
+          backgroundColor: 'rgba(76, 175, 80, 0.2)',
+          fill: true,
         },
-      ],
+        {
+          label: 'Absent',
+          data: @json($chartData['attendanceData']['absentData']),
+          borderColor: '#FF5733', // Red for absent
+          backgroundColor: 'rgba(255, 87, 51, 0.2)',
+          fill: true,
+        },
+      ]
     },
     options: {
       plugins: {
         legend: {
           display: true,
-          labels: {
-            generateLabels: function (chart) {
-              let datasets = chart.data.datasets[0].data;
-              return [
-                {
-                  text: "Total Students: ",
-                  fillStyle: "#316CEC",
-                },
-                { text: "Present: ", fillStyle: "#4CAF50" },
-                { text: "Absent: ", fillStyle: "#FF5733" },
-              ];
-            },
-          },
         },
       },
       scales: {
@@ -137,11 +132,14 @@
   const pieChart = new Chart(pieCtx, {
     type: "pie",
     data: {
-      labels: ["Present", "Absent"],
+      labels: ['Present', 'Absent'],
       datasets: [
         {
           label: "Attendance",
-          data: [554, 100],
+          data: [
+            @json($chartData['presentCount']),
+            @json($chartData['absentCount']),
+          ],
           backgroundColor: ["#4CAF50", "#FF5733"],
           borderColor: ["#ffffff", "#ffffff"],
           borderWidth: 1,
@@ -150,8 +148,8 @@
     },
     options: {
       animation: {
-        animateRotate: true, // Enable rotation animation
-        animateScale: true, // Enable scaling animation
+        animateRotate: true,
+        animateScale: true,
       },
       plugins: {
         legend: {

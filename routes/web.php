@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\StudentCountController;
 use App\Http\Controllers\FetchFacultyController;
@@ -16,8 +17,11 @@ Route::delete('/faculty', [FacultyController::class, 'delete'])->name('faculty.d
 Route::get('/faculty', [FacultyController::class, 'index']);
 
 
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 
-Route::get('/', function () { return view('dashboard'); })->name('dashboard');
+
+
+// Route::get('/', function () { return view('dashboard'); })->name('dashboard');
 Route::get('/shift', function () { return view('site/shift'); })->name('shift');
 Route::get('/attendance', function () { return view('site/attendance'); })->name('attendance');
 Route::get('/devicesettings', function () { return view('site/device_settings'); })->name('devicesettings');
