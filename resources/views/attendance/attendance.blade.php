@@ -147,6 +147,7 @@
             display: flex;
             margin-left: 100px;
             padding-left: 20px;
+            width: 88.25%;
             gap: 30px;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -156,6 +157,9 @@
             display: none; /* Hide by default */
         }
         .semester-attendance-table-container {
+            display: none; /* Hide by default */
+        }
+        .section-attendance-table-container {
             display: none; /* Hide by default */
         }
     </style>
@@ -211,7 +215,7 @@
             <div class="form-group">
                 <label for="faculty">Faculty:</label>
                 <select id="faculty">
-                    <option value="" disabled selected>Select Faculty</option>
+                    <option value=""  selected>Select Faculty</option>
                     @foreach($faculties as $faculty)
                         <option value="{{ $faculty->faculty_id }}">{{ $faculty->faculty_name }}</option>
                     @endforeach
@@ -221,6 +225,7 @@
             <div class="form-group">
                 <label for="duration">Duration:</label>
                 <select id="duration" name="duration">
+                    <option value="30">Select Duration</option>
                     <option value="30" {{ $duration == 30 ? 'selected' : '' }}>30 Days</option>
                     <option value="15" {{ $duration == 15 ? 'selected' : '' }}>15 Days</option>
                     <option value="7" {{ $duration == 7 ? 'selected' : '' }}>7 Days</option>
@@ -284,9 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateAttendance();
 });
 
-    document.querySelector('.download-btn').addEventListener('click', function() {
-        downloadTableAsExcel();
-    });
+
 
 
     

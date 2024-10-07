@@ -103,17 +103,6 @@ class StudentController extends Controller
     }
     
 
-    // public function destroy($student_nfc_id)
-    // {
-    //    dd($student_nfc_id);
-    //     $student = Student::where('student_nfc_id', $student_nfc_id)->firstOrFail();
-    //     $student->delete();
-
-    //     return redirect()->route('students.students')
-    //                     ->with('success', 'Student deleted successfully.');
-    // }
-   
-// app/Http/Controllers/StudentController.php
 public function destroy($student_nfc_id)
 {
     $student = Student::where('student_nfc_id', $student_nfc_id)->firstOrFail();
@@ -144,31 +133,33 @@ public function destroy($student_nfc_id)
     
         return view('students.students', compact('students', 'faculties'));
     }
-    
+
+    // In StudentController
     public function filter(Request $request)
     {
-        $query = Student::query(); // Initialize the query builder
+        $facultyId = $request->facultyId;
+        $semester = $request->semester;
+        $section = $request->section;
     
-        // Filter based on input
-        if ($request->filled('semester')) {
-            $query->where('student_semester', $request->semester);
+        $query = Student::query();
+    
+        if ($facultyId) {
+            $query->where('faculty_id', $facultyId);
         }
-        if ($request->filled('section')) {
-            $query->where('student_section', $request->section);
+        if ($semester) {
+            $query->where('student_semester', $semester);
         }
-        if ($request->filled('faculty')) {
-            $query->where('faculty_id', $request->faculty);
+        if ($section) {
+            $query->where('student_section', $section);
         }
     
-        // Execute the query to get the filtered students
         $students = $query->get();
     
-        // Render the partial view with the filtered students
-        $view = view('students.partials.student_list', compact('students'))->render();
+        $html = view('students.partials.student_list', compact('students'))->render();
     
-        // Return the rendered view as a JSON response
-        return response()->json(['html' => $view]);
+        return response()->json(['html' => $html]);
     }
+    
     
 
 }

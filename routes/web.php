@@ -33,9 +33,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
     Route::post('/students', [StudentController::class, 'store'])->name('students.store');
     Route::get('/students/show/{student_nfc_id?}', [StudentController::class, 'show'])->name('students.show');
-Route::delete('/students/delete/{student_nfc_id}', [StudentController::class, 'destroy'])->name('students.destroy');
+    Route::delete('/students/delete/{student_nfc_id}', [StudentController::class, 'destroy'])->name('students.destroy');
     Route::post('/students/search', [StudentController::class, 'search'])->name('students.search');
-    Route::get('/students/filter', [StudentController::class, 'filter'])->name('students.filter');
+    Route::post('/students/filter', [StudentController::class, 'filter'])->name('students.filter');
     Route::get('/students/edit/{student_nfc_id?}', [StudentController::class, 'edit'])->name('students.edit');
     Route::put('students/update/{student_nfc_id?}', [StudentController::class, 'update'])->name('students.update');
 

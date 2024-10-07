@@ -1,8 +1,8 @@
-<div>
+@if($section)
     <div class="student-box">
         <p><strong>Faculty: {{ $faculty->faculty_name }}  &ensp; Semester: {{ $semester }} &ensp; Section: {{ $section }}</strong></p>
     </div>
-   
+ @endif  
     <table class="attendance-table">
         <thead>
             <tr>

@@ -270,7 +270,7 @@
             <div class="form-group">
               <label for="faculty">Faculty:</label>
               <select id="faculty">
-                <option value="" disabled selected>Select Faculty</option>
+                <option value=""  selected>Select Faculty</option>
                           @foreach($faculties as $faculty)
                               <option value="{{ $faculty->faculty_id }}">{{ $faculty->faculty_name }}</option>
                           @endforeach
@@ -285,7 +285,7 @@
         </div>
 
         <!-- Example Student Box -->
-        <div class="student-list">
+        <div class="student-list" id="student-list">
           @include('students.partials.student_list', ['students' => $students])
       </div>
       
@@ -301,34 +301,7 @@
 
 @section('scripts')
 <script>
-  $(document).ready(function() {
-    $('#semester, #section, #faculty').change(function() {
-        filterStudents();
-    });
 
-    function filterStudents() {
-        var semester = $('#semester').val();
-        var section = $('#section').val();
-        var faculty = $('#faculty').val();
-
-        $.ajax({
-            url: '{{ url("/students/filter") }}',
-            type: 'GET',
-            data: {
-                semester: semester,
-                section: section,
-                faculty: faculty,
-            },
-            success: function(data) {
-                $('#student-list').html(data.html); // Ensure this matches your HTML structure
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', error);
-                console.error('Response:', xhr.responseText);
-            }
-        });
-    }
-});
 
 
     function handleDelete(student_nfc_id) {
@@ -361,6 +334,46 @@
             });
         }
     }
+
+
+
+
+
+
+
+
+
+    // -------------filters-------------
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('faculty').addEventListener('change', updateStudentList);
+        document.getElementById('semester').addEventListener('change', updateStudentList);
+        document.getElementById('section').addEventListener('change', updateStudentList);
+
+        function updateStudentList() {
+            const facultyId = document.getElementById('faculty').value;
+            const semester = document.getElementById('semester').value;
+            const section = document.getElementById('section').value;
+
+            fetch(`{{ route('students.filter') }}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ facultyId, semester, section })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const studentList = document.getElementById('student-list');
+                if (data.html) {
+                    studentList.innerHTML = data.html;
+                } else {
+                    studentList.innerHTML = '<p>No students found matching the criteria.</p>';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
 </script>
 
 
