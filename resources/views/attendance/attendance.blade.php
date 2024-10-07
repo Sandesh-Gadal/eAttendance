@@ -1,12 +1,9 @@
-@extends('master') <!-- Adjust this to match your master layout path -->
+@extends('master')
 
 @section('title', 'Attendance Management')
 
 @section('styles')
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
     <style>
         #attendance-content h2 {
             margin-left: 70px;
@@ -83,7 +80,6 @@
             background-color: #218838;
         }
 
-        /* Filters */
         .filters-container {
             display: flex;
             justify-content: start;
@@ -110,16 +106,13 @@
             border-radius: 4px;
         }
 
-        /* Attendance Table */
         .attendance-table {
             margin: 20px 100px;
             width: 90%;
-         
             border-collapse: collapse;
         }
 
-        .attendance-table th,
-        .attendance-table td {
+        .attendance-table th, .attendance-table td {
             padding: 10px;
             border: 1px solid #ddd;
             text-align: left;
@@ -130,56 +123,55 @@
             font-weight: bold;
         }
 
-        /* Specific styling for Student Name header */
         .attendance-table th:nth-child(2) {
             color: white;
-            background-color: #7f61ca; /* Purple highlight for the header */
+            background-color: #7f61ca;
         }
 
-        /* Styling for Student Name column data */
         .attendance-table td:nth-child(2) {
             background-color: #b3a6e0;
         }
 
-        .attendance-table-container{
-            overflow-x:hidden;
+        .individual-attendance-table-container {
+            overflow-x: hidden;
             overflow-y: auto;
-            height: 300px;  /* Set a fixed height for the table */
+            height: 300px;
         }
+
         #null-message {
             margin-left: 100px;
             color: #333;
         }
+
         .student-box {
-          display: flex;
-          margin-left:100px;
-          padding-left:20px;
-          gap:30px;
+            display: flex;
+            margin-left: 100px;
+            padding-left: 20px;
+            gap: 30px;
             border: 1px solid #ddd;
             border-radius: 5px;
             background-color: #f9f9f9;
+        }
+        .faculty-attendance-table-container {
+            display: none; /* Hide by default */
         }
     </style>
 @endsection
 
 @section('content')
-    <!----------------------------Attendance------------------------------------>
     <div id="attendance-content" class="dashboard-content">
         <h2>Search by:</h2>
         <div class="attendance-container">
-            <!-- Search Area -->
             <div class="search-area">
                 <form action="{{ route('attendance.search') }}" method="POST">
                     @csrf
                     <input type="text" name="student_nfc_id" placeholder="Enter Student ID" required>
-
-                <button class="search-btn"> 
-                    <i class="fas fa-search"></i> Search
-                </button>
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
                 </form>
             </div>
 
-            <!-- Date Selector and Download -->
             <div class="date-download">
                 <input type="date" id="attendance-date" />
                 <button class="download-btn">
@@ -188,7 +180,6 @@
             </div>
         </div>
 
-        <!-- Filter Options -->
         <div class="filters-container">
             <div class="form-group">
                 <label for="semester">Semester:</label>
@@ -236,68 +227,126 @@
         </div>
 
         <h2>Attendance Details</h2>
-        <div class="attendance-table-container">
+        <div class="individual-attendance-table-container" id="individualAttendanceContainer">
             @if(isset($student))
-            <input type="hidden" id="student_id_hidden" value="{{ $student->student_nfc_id }}">
-            @include('attendance.partials.individual_student', ['student' => $student, 'attendances' => $attendances ?? []])
-        @else
-            <p id="null-message">Nothing to show . Please enter a Student ID to search.</p>
-        @endif
+                <input type="hidden" id="student_id_hidden" value="{{ $student->student_nfc_id }}">
+                @include('attendance.partials.individual_student', ['student' => $student, 'attendances' => $attendances ?? []])
+            @else
+                <p id="null-message">Nothing to show. Please enter a Student ID to search.</p>
+            @endif
         </div>
-    <!----------------------------Attendance End------------------------------------>
+
+        <div class="faculty-attendance-table-container" id="facultyAttendanceContainer">
+            @if(isset($faculty))
+                @include('attendance.partials.faculty_attendance', ['faculty' => $faculty, 'attendances' => $attendances ?? []])
+            @else
+                <p id="null-message">No attendance records found for the selected duration.</p>
+            @endif
+        </div>
+    </div>
 @endsection
 
-
 @section('scripts')
-
 <script>
-    $(document).ready(function() {
-        $('#search-form').on('submit', function(e) {
-            console.console.log('i am called');
-            
-            e.preventDefault(); // Prevent the default form submission
-            const formData = $(this).serialize(); // Serialize form data
-
-            $.ajax({
-                url: $(this).attr('action'), // Use the form action
-                type: 'POST',
-                data: formData,
-                success: function(response) {
-                    $('#attendance-table-container').html(response); // Update the attendance table
-                },
-                error: function(xhr, status, error) {
-                    console.error(error); // Handle errors if necessary
-                }
-            });
-        });
-    });
-
-
     document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('duration').addEventListener('change', function() {
-        updateAttendance();
+        document.getElementById('duration').addEventListener('change', function() {
+            updateAttendance();
+        });
+
+        document.getElementById('faculty').addEventListener('change', function() {
+            updateAttendance();
+        });
+
+        function updateAttendance() {
+            const duration = document.getElementById('duration').value;
+            const studentId = document.getElementById('student_id_hidden') ? document.getElementById('student_id_hidden').value : null;
+            const facultyId = document.getElementById('faculty') ? document.getElementById('faculty').value : null;
+
+            if (facultyId) {
+                // Hide the individual attendance container and show the faculty attendance container
+                document.getElementById('individualAttendanceContainer').style.display = 'none';
+                document.getElementById('facultyAttendanceContainer').style.display = 'block';
+
+                fetch(`{{ route('attendance.faculty') }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ duration: duration, facultyId: facultyId })
+                })
+                .then(response => response.text())
+                .then(data => {
+                    document.querySelector('.faculty-attendance-table-container').innerHTML = data;
+                })
+                .catch(error => console.error('Error:', error));
+            } else if (studentId) {
+                // Show the individual attendance container and hide the faculty attendance container
+                document.getElementById('individualAttendanceContainer').style.display = 'block';
+                document.getElementById('facultyAttendanceContainer').style.display = 'none';
+
+                fetch(`{{ route('attendance.duration') }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ duration: duration, student_id_hidden: studentId })
+                })
+                .then(response => response.text())
+                .then(data => {
+                    document.querySelector('.individual-attendance-table-container').innerHTML = data;
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                console.log("Neither student ID nor faculty ID is set. Not updating the table.");
+            }
+        }
     });
 
-    function updateAttendance() {
-        const duration = document.getElementById('duration').value;
-        const studentId = document.getElementById('student_id_hidden') ? document.getElementById('student_id_hidden').value : null;
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     document.getElementById('faculty').addEventListener('change', function() {
+    //      updateFacultyAttendance();
+    //      const facultyId = document.getElementById('faculty') ? document.getElementById('faculty').value : null;
 
-        fetch(`{{ route('attendance.duration') }}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
-            },
-            body: JSON.stringify({ duration: duration, student_id_hidden: studentId })
-        })
-        .then(response => response.text())
-        .then(data => {
-            document.querySelector('.attendance-table-container').innerHTML = data;
-        })
-        .catch(error => console.error('Error:', error));
-    }
-});
+           
+    //         if (facultyId) {
+    //             // Hide the individual attendance container and show the faculty attendance container
+    //             document.getElementById('individualAttendanceContainer').style.display = 'none';
+    //             document.getElementById('facultyAttendanceContainer').style.display = 'block';
+
+    //             updateFacultyAttendance();
+    //         } else {
+    //             // If no faculty is selected, show individual attendance again
+    //             document.getElementById('individualAttendanceContainer').style.display = 'block';
+    //             document.getElementById('facultyAttendanceContainer').style.display = 'none';
+    //         }
+    //     });
+
+    //     function updateFacultyAttendance() {
+    //         const facultyId = document.getElementById('faculty') ? document.getElementById('faculty').value : null;
+    //         const duration = document.getElementById('duration').value;
 
 
+    //         if (!facultyId) {
+    //             console.log("faculty is not set. Not updating the table.");
+    //             return;
+    //         }
+       
+    //         fetch(`{{ route('attendance.faculty') }}`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    //             },
+    //             body: JSON.stringify({ duration: duration, facultyId: facultyId })
+    //         })
+    //             .then(response => response.text())
+    //         .then(data => {
+    //             document.querySelector('.faculty-attendance-table-container').innerHTML = data;
+    //         })
+    //         .catch(error => console.error('Error:', error));
+    //     }
+    // });
 </script>
 @endsection

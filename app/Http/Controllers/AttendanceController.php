@@ -17,10 +17,10 @@ class AttendanceController extends Controller
         $faculties = Faculty::all();
         $students = Student::all();
         $duration = $request->input('duration', 30); 
-        foreach ($attendances as $attendance) {
-            $student = $students->firstWhere('student_nfc_id', $attendance->student_nfc_id);
+        // foreach ($attendances as $attendance) {
+        //     $student = $students->firstWhere('student_nfc_id', $attendance->student_nfc_id);
            
-        }
+        // }
 
         return view('attendance.attendance', compact('attendances', 'faculties', 'students','duration'));
     }
@@ -62,27 +62,88 @@ class AttendanceController extends Controller
 
 public function filterByDuration(Request $request)
 {
-    $duration = $request->input('duration', 30); // Default to 30 days if no duration is selected
+    $duration = $request->input('duration'); // Default to 30 days if no duration is selected
     $student = null;
     $attendances = collect();
     $shift = null;
+  
+if ($request->has('student_id_hidden')) {
+    $student = Student::where('student_nfc_id', $request->input('student_id_hidden'))->first();
+    if ($student) {
+        $shift = Shift::find($student->shift_id);
 
-    if ($request->has('student_id_hidden')) {
-        $student = Student::where('student_nfc_id', $request->input('student_id_hidden'))->first();
-        if ($student) {
-            $shift = Shift::find($student->shift_id);
+        $startDate = now()->subDays($duration)->startOfDay();
+        $endDate = now()->endOfDay();
 
-            $startDate = now()->subDays($duration)->startOfDay();
-            $endDate = now()->endOfDay();
-
-            $attendances = Attendance::where('student_nfc_id', $student->student_nfc_id)
-                ->whereBetween('attendance_date', [$startDate, $endDate])
-                ->get();
-        }
+        $attendances = Attendance::where('student_nfc_id', $student->student_nfc_id)
+            ->whereBetween('attendance_date', [$startDate, $endDate])
+            ->get();
+            $request->request->set('student_id_hidden', null);
     }
 
     return view('attendance.partials.individual_student', compact('student', 'attendances', 'duration', 'shift'));
+
+} elseif ($request->has('facultyId')) {
+    $faculty = Faculty::where('faculty_id', $request->input('facultyId'))->first();
+    if ($faculty) {
+        $startDate = now()->subDays($duration)->startOfDay();
+        $endDate = now()->endOfDay();
+
+        $attendances = Attendance::where('faculty_id', $faculty->faculty_id)
+            ->whereBetween('attendance_date', [$startDate, $endDate])
+            ->get();
+
+        return view('attendance.partials.faculty_attendance', compact('faculty', 'attendances'));
+    }
+}
 }
 
+
+
+public function getFacultyAttendance(Request $request)
+{
+    $faculty = Faculty::where('faculty_id', $request->input('facultyId'))->first();
+    if ($faculty) {
+        $duration = $request->input('duration', 30); // Default to 30 days if no duration is selected
+        $startDate = now()->subDays($duration)->startOfDay();
+        $endDate = now()->endOfDay();
+
+        // Get all students of the faculty
+        $students = Student::where('faculty_id', $faculty->faculty_id)->pluck('student_nfc_id');
+
+        // Initialize an array to hold attendance summary
+        $attendanceSummary = [];
+
+        // Loop through each day in the duration
+        for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+            $presentCount = 0;
+            $absentCount = 0;
+
+            foreach ($students as $studentNfcId) {
+                $attendance = Attendance::where('student_nfc_id', $studentNfcId)
+                    ->whereDate('attendance_date', $date)
+                    ->first();
+
+                if ($attendance) {
+                    $presentCount++;
+                } else {
+                    $absentCount++;
+                }
+            }
+
+            $attendanceSummary[] = [
+                'date' => $date->toDateString(),
+                'present' => $presentCount,
+                'absent' => $absentCount,
+            ];
+        }
+
+        return view('attendance.partials.faculty_attendance', compact('faculty', 'attendanceSummary', 'duration'));
+        
+    }
+
+    // Handle the case where the faculty is not found
+    return redirect()->back()->with('error', 'Faculty not found.');
+}
 
 }
