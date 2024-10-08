@@ -47,7 +47,7 @@
       }
       .form-container {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 20px;
       }
       .form-group {
@@ -60,12 +60,13 @@
         margin-bottom: 5px;
       }
       .form-group input,
-      .form-group select {
+      .form-group select  , .btn-clear-filters{
         padding: 10px;
         background-color: #eeeeee;
         border: 1px solid #ddd;
         border-radius: 4px;
         width: 100%;
+        cursor: pointer;
       }
       .register-btn {
         background-color: #316cec;
@@ -213,6 +214,20 @@
        display: flex;
        justify-content: space-around;
       }
+
+      .btn-clear-filters-container {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .btn-clear-filters:hover {
+            background-color: #c82333;
+            color: white;
+        }
+      .btn-clear-filters-container i{
+        scale: 1.5;
+      }
+    
   
     </style>
 @endsection
@@ -276,6 +291,12 @@
                           @endforeach
               </select>
             </div>
+            <div class="form-group btn-clear-filters-container">
+              <!-- Clear Filters Button -->
+              <button class="btn-clear-filters " onclick="clearFilters()">
+                <i class="fa fa-times"></i> &ensp; Clear Filters
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -302,7 +323,15 @@
 @section('scripts')
 <script>
 
-
+function clearFilters() {
+    // Clear the filter inputs
+    document.getElementById('semester').selectedIndex = 0;
+    document.getElementById('section').selectedIndex = 0;
+    document.getElementById('faculty').selectedIndex = 0;
+    
+    // Reload the page to reset all filters
+    window.location.href = "{{ route('students.index') }}";
+  }
 
     function handleDelete(student_nfc_id) {
         if (confirm('Are you sure you want to delete this student?')) {

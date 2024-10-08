@@ -99,7 +99,7 @@
             font-weight: bold;
         }
 
-        .form-group select {
+        .form-group select , .clear-filters-btn{
             padding: 10px;
             background-color: #eeeeee;
             border: 1px solid #ddd;
@@ -161,6 +161,18 @@
         }
         .section-attendance-table-container {
             display: none; /* Hide by default */
+        }
+
+
+        .clear-filters-btn:hover {
+            background-color: #c82333;
+            color: white;
+        }
+        .btn-clear-filters-container{
+            justify-content: flex-end;
+        }
+        .btn-clear-filters-container i{ 
+scale: 1.5
         }
     </style>
 @endsection
@@ -232,6 +244,13 @@
                     <option value="1" {{ $duration == 1 ? 'selected' : '' }}>1 Day</option>
                 </select>
             </div>
+            <div class="form-group btn-clear-filters-container">
+                <button class="clear-filters-btn" id="clear-filters-btn">
+                    <i class="fas fa-times"></i>&ensp; Clear Filters
+                </button>
+            </div>
+
+           
         </div>
 
         <h2>Attendance Details :</h2>
@@ -413,6 +432,25 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+document.addEventListener('DOMContentLoaded', (event) => {
+            const studentIdInput = document.querySelector('input[name="student_nfc_id"]');
+            const clearFiltersBtn = document.getElementById('clear-filters-btn');
+            const semesterSelect = document.getElementById('semester');
+            const sectionSelect = document.getElementById('section');
+            const facultySelect = document.getElementById('faculty');
+            const durationSelect = document.getElementById('duration');
+            const datePicker = document.getElementById('attendance-date');
 
+            clearFiltersBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                studentIdInput.value = '';
+                semesterSelect.selectedIndex = 0;
+                sectionSelect.selectedIndex = 0;
+                facultySelect.selectedIndex = 0;
+                durationSelect.selectedIndex = 0;
+                datePicker.value = '';
+                location.reload();
+            });
+        });
 </script>
 @endsection
