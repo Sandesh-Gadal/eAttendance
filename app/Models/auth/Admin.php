@@ -1,21 +1,27 @@
 <?php
+namespace App\Models\auth;
 
-namespace App\Models;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class Admin extends Model
+class Admin extends Authenticatable
 {
-    use HasFactory;
-
     protected $table = 'admins';
     protected $primaryKey = 'admin_id';
 
     protected $fillable = [
         'admin_username',
-        'admin_password'
+        'admin_password',
+    ];
+
+    protected $hidden = [
+        'admin_password',
     ];
 
     // public $timestamps = false;
+
+    // Overriding to match custom password field
+    public function getAuthPassword()
+    {
+        return $this->admin_password;
+    }
 }

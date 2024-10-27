@@ -59,9 +59,10 @@
               <a href="{{ url('/devicesettings') }}" class="{{ request()->is('devicesettings') ? 'active' : '' }}"
                 ><i class="fas fa-cogs"></i> Device Settings</a
               >
-              <a href="{{ url('/logout') }}" class="{{ request()->is('logout') ? 'active' : '' }}"
-                ><i class="fas fa-sign-out-alt"></i> Logout</a
-              >
+              <a href="#" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+
             </div>
           </div>
         </div>
@@ -73,6 +74,22 @@
         </div>
       </div>
     </div>
+
+
+
+
+        <!-- Logout Confirmation Modal -->
+        <div id="logoutModal" class="modal">
+          <div class="modal-content">
+              <h2>Log out</h2>
+              <p>Are you sure you want to log out?</p>
+              <button id="confirmLogout" class="confirm-btn">Yes</button>
+              <button id="cancelLogout" class="cancel-btn">No</button>
+          </div>
+      </div>
+
+
+
 
     <!-- JavaScript -->
     <script>
@@ -88,6 +105,44 @@
           this.classList.add("active");
         });
       });
+
+
+
+        // Open the modal when the logout button is clicked
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            document.getElementById('logoutModal').style.display = 'block';
+        });
+
+        // Redirect to the login page when confirming logout
+        document.getElementById('confirmLogout').addEventListener('click', function() {
+            // Perform an AJAX request to log out
+            $.ajax({
+                url: '{{ route("admin.logout") }}', // Change this to your actual logout route
+                type: 'POST', // or 'GET', depending on your route
+                data: {
+                    _token: '{{ csrf_token() }}' // Include CSRF token for security
+                },
+                success: function(response) {
+                    // Redirect to the login page after successful logout
+                    window.location.href = '/login'; // Change this to your actual login route
+                },
+                error: function(xhr, status, error) {
+                    // Handle error if needed
+                    alert('Logout failed. Please try again.');
+                }
+            });
+        });
+        // Go back to the previous page when cancel is clicked
+        document.getElementById('cancelLogout').addEventListener('click', function() {
+            document.getElementById('logoutModal').style.display = 'none';
+        });
+
+        // Close the modal if the user clicks outside of it
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('logoutModal')) {
+                document.getElementById('logoutModal').style.display = 'none';
+            }
+        };
     </script>
 
     @yield('scripts') 
